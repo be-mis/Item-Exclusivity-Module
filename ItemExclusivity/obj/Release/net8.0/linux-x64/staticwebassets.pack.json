@@ -1,0 +1,89 @@
+{
+  "Files": [
+    {
+      "Id": "/home/sambashare/ItemExclusivity/ItemExclusivity/obj/Release/net8.0/linux-x64/scopedcss/projectbundle/ItemExclusivity.bundle.scp.css",
+      "PackagePath": "staticwebassets/ItemExclusivity.bundle.scp.css"
+    },
+    {
+      "Id": "/home/sambashare/ItemExclusivity/ItemExclusivity/wwwroot/css/app.css",
+      "PackagePath": "staticwebassets/css/app.css"
+    },
+    {
+      "Id": "/home/sambashare/ItemExclusivity/ItemExclusivity/wwwroot/css/bootstrap/bootstrap.min.css",
+      "PackagePath": "staticwebassets/css/bootstrap/bootstrap.min.css"
+    },
+    {
+      "Id": "/home/sambashare/ItemExclusivity/ItemExclusivity/wwwroot/css/bootstrap/bootstrap.min.css.map",
+      "PackagePath": "staticwebassets/css/bootstrap/bootstrap.min.css.map"
+    },
+    {
+      "Id": "/home/sambashare/ItemExclusivity/ItemExclusivity/wwwroot/css/open-iconic/FONT-LICENSE",
+      "PackagePath": "staticwebassets/css/open-iconic"
+    },
+    {
+      "Id": "/home/sambashare/ItemExclusivity/ItemExclusivity/wwwroot/css/open-iconic/ICON-LICENSE",
+      "PackagePath": "staticwebassets/css/open-iconic"
+    },
+    {
+      "Id": "/home/sambashare/ItemExclusivity/ItemExclusivity/wwwroot/css/open-iconic/README.md",
+      "PackagePath": "staticwebassets/css/open-iconic/README.md"
+    },
+    {
+      "Id": "/home/sambashare/ItemExclusivity/ItemExclusivity/wwwroot/css/open-iconic/font/css/open-iconic-bootstrap.min.css",
+      "PackagePath": "staticwebassets/css/open-iconic/font/css/open-iconic-bootstrap.min.css"
+    },
+    {
+      "Id": "/home/sambashare/ItemExclusivity/ItemExclusivity/wwwroot/css/open-iconic/font/fonts/open-iconic.eot",
+      "PackagePath": "staticwebassets/css/open-iconic/font/fonts/open-iconic.eot"
+    },
+    {
+      "Id": "/home/sambashare/ItemExclusivity/ItemExclusivity/wwwroot/css/open-iconic/font/fonts/open-iconic.otf",
+      "PackagePath": "staticwebassets/css/open-iconic/font/fonts/open-iconic.otf"
+    },
+    {
+      "Id": "/home/sambashare/ItemExclusivity/ItemExclusivity/wwwroot/css/open-iconic/font/fonts/open-iconic.svg",
+      "PackagePath": "staticwebassets/css/open-iconic/font/fonts/open-iconic.svg"
+    },
+    {
+      "Id": "/home/sambashare/ItemExclusivity/ItemExclusivity/wwwroot/css/open-iconic/font/fonts/open-iconic.ttf",
+      "PackagePath": "staticwebassets/css/open-iconic/font/fonts/open-iconic.ttf"
+    },
+    {
+      "Id": "/home/sambashare/ItemExclusivity/ItemExclusivity/wwwroot/css/open-iconic/font/fonts/open-iconic.woff",
+      "PackagePath": "staticwebassets/css/open-iconic/font/fonts/open-iconic.woff"
+    },
+    {
+      "Id": "/home/sambashare/ItemExclusivity/ItemExclusivity/wwwroot/css/site.css",
+      "PackagePath": "staticwebassets/css/site.css"
+    },
+    {
+      "Id": "/home/sambashare/ItemExclusivity/ItemExclusivity/wwwroot/favicon.ico",
+      "PackagePath": "staticwebassets/favicon.ico"
+    },
+    {
+      "Id": "/home/sambashare/ItemExclusivity/ItemExclusivity/wwwroot/js/aboutScript.js",
+      "PackagePath": "staticwebassets/js/aboutScript.js"
+    },
+    {
+      "Id": "/home/sambashare/ItemExclusivity/ItemExclusivity/wwwroot/js/postMessagePromo.js",
+      "PackagePath": "staticwebassets/js/postMessagePromo.js"
+    },
+    {
+      "Id": "obj/Release/net8.0/linux-x64/staticwebassets/msbuild.ItemExclusivity.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj/Release/net8.0/linux-x64/staticwebassets/msbuild.build.ItemExclusivity.props",
+      "PackagePath": "build\\ItemExclusivity.props"
+    },
+    {
+      "Id": "obj/Release/net8.0/linux-x64/staticwebassets/msbuild.buildMultiTargeting.ItemExclusivity.props",
+      "PackagePath": "buildMultiTargeting\\ItemExclusivity.props"
+    },
+    {
+      "Id": "obj/Release/net8.0/linux-x64/staticwebassets/msbuild.buildTransitive.ItemExclusivity.props",
+      "PackagePath": "buildTransitive\\ItemExclusivity.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

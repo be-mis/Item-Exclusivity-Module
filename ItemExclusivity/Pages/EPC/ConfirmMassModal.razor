@@ -1,0 +1,92 @@
+﻿<style>
+    .modal-content {
+        width: fit-content;
+    }
+
+    .cancel-button {
+        border-radius: 2px;
+    }
+
+    .remover-button {
+        padding: 2px 16px;
+        border: 2px solid #AA0061;
+        color: #AA0061;
+        border-radius: 2px;
+    }
+
+        .remover-button:hover {
+            background-color: #AA0061;
+            color: white;
+        }
+
+    p {
+        margin-bottom: 0px !important;
+    }
+</style>
+
+<div class="modal" style="@ModalStyle">
+    <div class="modal-content">
+
+        <div class="form-top"></div>
+        <div class="modal-header">
+
+            @* <p class="upload-memorandum">
+                <span class="upload">Adding </span>
+                <span class="memorandum">Branchssssss</span>
+            </p> *@
+            @* <span @onclick="CloseModal" class="close">&times;</span> *@
+        </div>
+        <div class="modal-body">
+            <div style="padding: 20px; display: flex">
+                @* @ModalBody *@
+                <p>Are you sure you want to remove <b>@storeCodeToDelete</b>?</p>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button @onclick="Confirm"  class="remover-button">Yes</button>
+            <button @onclick="Cancel" class="cancel-button">No</button>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    [Parameter] public EventCallback<bool> OnConfirm { get; set; }
+    [Parameter] public EventCallback<bool> OnCancel { get; set; }
+
+    private void Confirm()
+    {
+        OnConfirm.InvokeAsync(true);
+        CloseModal();
+    }
+
+    private void Cancel()
+    {
+        OnCancel.InvokeAsync(false);
+        CloseModal();
+    }
+
+    [Parameter]
+    public string ModalTitle { get; set; }
+
+    [Parameter]
+    public RenderFragment ModalBody { get; set; }
+
+    [Parameter]
+    public string storeCodeToDelete { get; set; }
+
+    private string ModalStyle => ShowModal ? "display: block;" : "display: none;";
+
+    private bool ShowModal { get; set; }
+
+    public void OpenModal()
+    {
+        ShowModal = true;
+    }
+
+    public void CloseModal()
+    {
+        ShowModal = false;
+    }
+
+}

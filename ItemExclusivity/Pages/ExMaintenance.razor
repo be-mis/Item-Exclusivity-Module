@@ -1,0 +1,68 @@
+﻿@page "/maintenance"
+@using ItemExclusivity.Data
+@using ItemExclusivity.Models
+@inject IJSRuntime IJSRuntime
+@inject IConfiguration Configuration
+@inject NavigationManager NavigationManager
+@inject IMyDataConnection _data
+
+<h3>Exclusivity Maintenance</h3>
+
+@* <button type="submit" @onclick="ItemGetting">Get PDF Data</button>
+
+@if (isLoading)
+{
+    <p>Loading data...</p>
+}
+else if (itemMaintenances != null && itemMaintenances.Any())
+{
+    <table>
+        <thead>
+            <tr>
+                <th>File Name</th>
+                <th>Date Uploaded</th>
+                <th>Uploaded By</th>
+                <th>Path</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in itemMaintenances)
+            {
+                <tr>
+                    <td>@item.bpcode</td>
+                    <td>@item.bpname</td>
+                    <td>@item.documentnumber</td>
+                    <td>@item.user</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <h1>No data</h1>
+} *@
+
+@code {
+    // List<ItemMaintenance> itemMaintenances = new List<ItemMaintenance>();
+    // bool isLoading = false;
+
+    // private async Task ItemGetting()
+    // {
+    //     try
+    //     {
+    //         isLoading = true;
+    //         string getPDF = $"SELECT bpcode, bpname, documentnumber, user FROM documentgenerated";
+    //         itemMaintenances = await _data.LoadData<ItemMaintenance, dynamic>(getPDF, new { }, Configuration.GetConnectionString("DefaultConnection"));
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         // Handle error (log or display an error message)
+    //         Console.WriteLine($"Error: {ex.Message}");
+    //     }
+    //     finally
+    //     {
+    //         isLoading = false;
+    //     }
+    // }
+}

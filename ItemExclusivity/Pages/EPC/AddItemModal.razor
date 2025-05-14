@@ -1,0 +1,500 @@
+@using ItemExclusivity.Data
+@using ItemExclusivity.Models
+@using Microsoft.AspNetCore.Mvc
+@using NPOI.SS.UserModel;
+@using System.IO;
+@using System.Net.Http.Headers;
+@using NPOI.XSSF.UserModel
+
+@inject IJSRuntime IJSRuntime
+@inject IConfiguration Configuration
+@inject NavigationManager NavigationManager
+@inject IMyDataConnection _data
+
+<style>
+
+    /* Modal content styles */
+    .modal-content-add {
+    background-color: #fefefe;
+    margin: 5% auto; /* 15% from the top and centered */
+    border: 1px solid #888;
+    min-width: auto; /* Could be more or less, depending on screen size */
+    width: 70%;
+    }
+
+    label {
+    font-size: 14px;
+    color: #7B7B7B;
+    }
+</style>
+<div class="modal" style="@ModalStyle">
+    <div class="modal-content-add">
+        <div class="form-top"></div>
+        <div class="modal-header">
+            <p class="upload-memorandum">
+                <span class="upload">Adding </span>
+                <span class="memorandum">Item</span>
+            </p>
+            @* <span @onclick="CloseModal" class="close">&times;</span> *@
+        </div>
+        <div class="modal-body">
+            <div class="form-content" style="padding: 20px;">
+                <div class="col-span-2" style="display: flex; justify-content: space-between; gap: 20px;">
+
+                    <div style="width: 100%">
+                        <label>Chain*</label><br /> @* Chain selection *@
+                        <select class="select-input" @onchange="OnChainChanged" value="@selectedChain" disabled="@isLoading">
+                            <option value="">-- Select Chain --</option>
+                            <option value="1">Variuos Chain</option>
+                            <option value="2">SM HOMEWORLD</option>
+                            <option value="3">OUR HOME</option>
+                        </select>
+                    </div>
+
+                    <div style="width: 100%"
+                        <label>Category*</label><br /> @* Category selection *@
+                        <select class="select-input" @onchange="OnCategoryChanged" value="@selectedCategory" disabled="@string.IsNullOrEmpty(selectedChain)">
+                            <option value="">-- Select Category --</option>
+                            <option value="LAMPS">LAMPS</option>
+                            <option value="DECOR">DECOR</option>
+                            <option value="FRAMES">FRAMES</option>
+                            @if (selectedChain != "2")
+                            {
+                                <option value="CLOCKS">CLOCKS</option>
+                            }
+                            @if (selectedChain == "1")
+                            {
+                                <option value="STATIONERY">STATIONERY</option>
+                            }
+                        </select>
+                    </div>
+                    <div style="width: 100%">
+                        <label>Store Classification*</label><br /> @* Store Class selection *@
+                        <select class="select-input" @onchange="OnStoreClassificationChanged" value="@selectedStoreClassification" disabled="@string.IsNullOrEmpty(selectedCategory)">
+                            <option value="">-- Select Classification</option>
+                            <option value="1">A STORES – EXTRA HIGH</option>
+                            <option value="2">B STORES – HIGH</option>
+                            <option value="3">C STORES - MEDIUM</option>
+                            <option value="4">D STORES - SMALL</option>
+                            <option value="5">E STORES - EXTRA SMALL</option>
+                        </select>
+                    </div>
+
+                    <div style="width: 100%">
+                        <label>Item Number*</label><br /> @* Input type of item code *@
+                        <input type="text" placeholder="Search Item..."
+                        @oninput="(e) => OnSearchItem(e)" value="@selectedItemId" />
+
+                        @if (!string.IsNullOrEmpty(itemSearch))
+                        {
+                            <ul>
+                                @foreach (var item in filteredItem.OrderBy(o => o.itemNo))
+                                {
+                                    <li @onclick="() => OnSelectItem(item)">
+                                        @item.itemNo - @item.itemDescription
+                                    </li>
+                                }
+                            </ul>
+                        }
+
+                        @* <select class="select-input" @oninput="ChangeBranch" value="@selectedItemId" disabled="@string.IsNullOrEmpty(selectedStoreClassification)">
+                            <option value="" hidden>-- Select Item No --</option>
+                            @foreach (var item in itemMaintenances)
+                            {
+                                if(!AddedItem.Any(c => c.itemcode == item.itemNo && c.chain == selectedChain && c.storeclass == selectedStoreClassification))
+                                {
+                                    <option value="@item.itemNo - @item.itemDescription">@item.itemNo - @item.itemDescription</option>
+                                }
+                            }
+                        </select> *@
+                    </div>
+
+                    <div style="width:fit-content; white-space: nowrap;height: auto; display: flex; flex-direction: column;">
+                        <button style="margin-top: auto" class="submit-button add-button" @onclick="AddingItem" disabled="@(string.IsNullOrEmpty(selectedItemId))">Add</button>
+                    </div>
+                </div>
+                <br />
+                <div class="grid grid-cols-2">
+                    <div class="col-span-2">
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width:15%">Chain</th>
+                                    <th style="width:15%">Category</th>
+                                    <th style="width:15%">Store Classification</th>
+                                    <th style="width:15%">Item Code</th>
+                                    <th style="width:30%">Item Name</th>
+                                    <th style="width:10%">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in AddedItem)
+                                {
+                                    <tr>
+                                        <td>
+                                            @(item.chain switch
+                                            {
+                                                "1" => "Various Chain",
+                                                "2" => "SM HOMEWORLD",
+                                                "3" => "OUR HOME",
+                                                _ => "Unknown"
+                                            })
+                                        </td>
+                                        <td>
+                                            @item.category
+                                        </td>
+                                        <td>
+                                            @(item.storeclass switch
+                                            {
+                                                "1" => "A STORES – EXTRA HIGH",
+                                                "2" => "B STORES – HIGH",
+                                                "3" => "C STORES - MEDIUM",
+                                                "4" => "D STORES - SMALL",
+                                                "5" => "E STORES - EXTRA SMALL",
+                                                _ => "Unknown"
+                                            })
+                                        </td>
+                                        <td>
+                                            @item.itemcode <!--add here the selected item code-->
+                                        </td>
+                                        <td>
+                                            @item.itemname <!--add here the selected item name-->
+                                        </td>
+                                        @* <td>
+                                            @(item.itemclass switch
+                                            {
+                                                "1" => "A STORES – EXTRA HIGH",
+                                                "2" => "B STORES – HIGH",
+                                                "3" => "C STORES - MEDIUM",
+                                                "4" => "D STORES - SMALL",
+                                                "5" => "E STORES - EXTRA SMALL",
+                                                _ => "Unknown"
+                                            })
+                                        </td> *@
+                                        <td>
+                                            <button class="remove-button" @onclick="@(e => RemoveBranch(item.id))">
+                                                <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" class="ionicon" viewBox="0 0 512 512"><path d="M112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" /><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M80 112h352" /><path d="M192 112V72h0a23.93 23.93 0 0124-24h80a23.93 23.93 0 0124 24h0v40M256 176v224M184 176l8 224M328 176l-8 224" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" /></svg>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <br />
+
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button @onclick="SaveItem" class="submit-button" disabled="@(!AddedItem.Any())">Save</button>
+            <button @onclick="CloseModal" class="cancel-button">Cancel</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool isLoading = false;
+    private bool CanDisplayData { get; set; } = false;
+    private string? selectedStoreClassification, selectedType, selectedItemNo;
+    private string selectedChain { get; set; }
+    private string selectedCategory { get; set; }
+    private string selectedItemId { get; set; }
+    private string selectedItem { get; set; }
+    private string selectedItemCode { get; set; }
+    private string selectedItemName { get; set; }
+    private string selectedItemClassification { get; set; }
+    private DateTime datenow = DateTime.Now;
+    private List<ItemMaintenance> itemMaintenances = new List<ItemMaintenance>();
+    private List<BranchMaintenance> branchMaintenances = new List<BranchMaintenance>();
+    private List<ItemMaintenance> filteredItem = new List<ItemMaintenance>();
+    private string itemSearch = string.Empty;
+    private string searchValue = string.Empty;
+
+    private List<AddedItems> AddedItem = new List<AddedItems>();
+
+    public class AddedItems // Model for temporary added item
+    {
+        public int id { get; set; }
+        public string chain { get; set; }
+        public string category { get; set; }
+        public string storeclass { get; set; }
+        public string itemclass { get; set; }
+        public string itemcode { get; set; }
+        public string itemname { get; set; }
+    }
+
+    [Parameter]
+    public string ModalTitle { get; set; }
+
+    [Parameter]
+    public RenderFragment ModalBody { get; set; }
+
+    private string ModalStyle => ShowModal ? "display: block;" : "display: none;";
+
+    private bool ShowModal { get; set; }
+
+    public void OpenModal() => ShowModal = true;
+    
+    public void CloseModal() // close and clear all the value of field
+    {
+        selectedChain = string.Empty;
+        selectedCategory = string.Empty;
+        selectedItem = string.Empty;
+        selectedItemClassification = string.Empty;
+        selectedStoreClassification = string.Empty;
+        selectedItemId = string.Empty;
+        selectedItemCode = string.Empty;
+        selectedItemName = string.Empty;
+        AddedItem = new List<AddedItems>();
+        StateHasChanged();
+        ShowModal = false;
+        
+    }
+
+    // inserting the data into database
+    public async Task SaveItem()
+    {
+        int g = 1;
+        try
+        {
+            foreach (var item in AddedItem)
+            {
+                string chains = item.chain switch 
+                {
+                    "1" => "vChain",
+                    "2" => "sm",
+                    "3" => "oHome",
+                    _ => "Unknown"
+                };
+
+                string sclass = item.storeclass switch
+                {
+                    "1" => "A",
+                    "2" => "B",
+                    "3" => "C",
+                    "4" => "D",
+                    "5" => "E",
+                    _ => "Unknown"
+                };
+
+                // Console.WriteLine($"Chain : {chains}{sclass}");
+                // Console.WriteLine($"Store Class : {item.storeclass}");
+                // Console.WriteLine($"Item Code : {item.itemcode}");
+
+                string updateSql = $@"UPDATE epc_item_exclusive
+                                    SET {chains}{sclass} = {item.itemclass}
+                                    WHERE itemNo = '{item.itemcode}'";
+                await _data.SaveData(updateSql, new { }, Configuration.GetConnectionString("DefaultConnection"));
+
+                string logsSQL = $@"INSERT INTO epc_item_m_logs(itemNo, chain, update_From, update_To, updated_By, updated_Date)
+                                VALUES('{item.itemcode}', 'Set {chains}{sclass}', 'Multiple Update', '{item.itemclass}', 'user', '{datenow}')";
+                await _data.SaveData(logsSQL, new { }, Configuration.GetConnectionString("DefaultConnection"));
+
+                // Console.WriteLine($"SQL logs {g++}: {logsSQL}");
+                // Console.WriteLine($"SQL {g++}: {updateSql}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in Saving: {ex.Message}");
+        }
+        finally
+        {
+            AddedItem.Clear();
+            CloseModal();
+        }
+    }
+
+    private void OnChainChanged(ChangeEventArgs e)
+    {
+        selectedChain = (e.Value as string)?.Trim();
+        CheckAndDisplayData();
+    }
+
+    private void OnCategoryChanged(ChangeEventArgs e)
+    {
+        selectedCategory = (e.Value as string)?.Trim();
+        CheckAndDisplayData();
+    }
+
+    private void OnStoreClassificationChanged(ChangeEventArgs e)
+    {
+        selectedStoreClassification = e.Value.ToString();
+        CheckAndDisplayData();
+    }
+
+    private void OnItemClassificationChanged(ChangeEventArgs e)
+    {
+        selectedItemClassification = e.Value.ToString();
+        CheckAndDisplayData();
+    }
+
+    private async void CheckAndDisplayData()
+    {
+        // Check if all the selections are not null or empty
+        if (!string.IsNullOrEmpty(selectedChain) &&
+            !string.IsNullOrEmpty(selectedCategory))
+        {
+            CanDisplayData = true;
+            // await GetBranchz();
+            await GetItems();
+        }
+        else
+        {
+            CanDisplayData = false;
+        }
+
+        // Force UI to update
+        StateHasChanged();
+    }
+
+    // fetching data depends on selected value of drop down / filter
+    private async Task GetItems()
+    {
+        try
+        {
+            string? chainletter = selectedStoreClassification switch
+            {
+                "1" => "A",
+                "2" => "B",
+                "3" => "C",
+                "4" => "D",
+                "5" => "E",
+                _ => null
+            };
+
+            string? sChain = selectedChain switch
+            {
+                "1" => "vChain",
+                "2" => "sm",
+                "3" => "oHOME",
+                _ => null
+            };
+
+            string getItems;
+
+            // Check if both classification and category are set
+            if (!string.IsNullOrEmpty(selectedStoreClassification) && !string.IsNullOrEmpty(selectedCategory))
+            {
+                getItems = $@"SELECT b.itemNo, b.subDepartment, b.ItemDescription, b.Size, b.ChildColor
+                           FROM epc_items_barcode b
+                           JOIN epc_item_exclusive e ON e.itemNo = b.ItemNo
+                           WHERE b.subDepartment = '{selectedCategory}'
+                             AND (e.{sChain}{chainletter} = '0')";
+            }
+            else
+            {
+                getItems = $@"SELECT b.itemNo, b.subDepartment, b.ItemDescription, b.Size, b.ChildColor
+                            FROM epc_items_barcode b
+                            JOIN epc_item_exclusive e ON e.itemNo = b.ItemNo
+                            WHERE
+                                e.vChainA = 0 OR e.vChainB = 0 OR e.vChainC = 0 OR e.vChainD = 0 OR e.vChainE = 0
+                                OR e.smA = 0 OR e.smB = 0 OR e.smC = 0 OR e.smD = 0 OR e.smE = 0
+                                OR e.oHomeA = 0 OR e.oHomeB = 0 OR e.oHomeC = 0 OR e.oHomeD = 0 OR e.oHomeE = 0";
+
+            }
+            // save the fetched data into itemMaintenance
+            itemMaintenances = await _data.LoadData<ItemMaintenance, dynamic>(getItems, new { }, Configuration.GetConnectionString("DefaultConnection"));
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void ChangeBranch(ChangeEventArgs e)
+    {
+        selectedItemId = (e.Value as string)?.Trim();
+        if (!string.IsNullOrEmpty(selectedItemId))
+        {
+            // Split the selectedItemId into itemNo and itemDescription
+            var parts = selectedItemId.Split(" - ");
+
+            if (parts.Length == 2)
+            {
+                selectedItemCode = parts[0]; // itemNo
+                selectedItemName = parts[1]; // itemDescription
+            }
+            else
+            {
+                // Handle cases where the format is incorrect
+                Console.WriteLine("Invalid format for selected item.");
+                selectedItemCode = selectedItemName = null;
+            }
+        }
+        else
+        {
+            Console.WriteLine("No item selected.");
+            selectedItemCode = selectedItemName = null;
+        }
+    }
+
+    private int AddedItemId = 0;
+
+    // adding item to temporary list
+    private void AddingItem()
+    {
+        AddedItem.Add(new AddedItems 
+            { 
+                id = AddedItemId++, 
+                chain = selectedChain, 
+                category = selectedCategory, 
+                storeclass = selectedStoreClassification, 
+                itemcode = selectedItemCode, 
+                itemname = selectedItemName,
+                itemclass = selectedItemClassification
+            });
+        
+        // after add clear all selected item
+        selectedChain = string.Empty;
+        selectedCategory = string.Empty;
+        selectedStoreClassification = string.Empty;
+        selectedItemId = string.Empty;
+        selectedItemCode = string.Empty;
+        selectedItemName = string.Empty;
+        selectedItemClassification = string.Empty;
+        StateHasChanged();
+    }
+
+    // delete function for temporary list
+    private void RemoveBranch(int AddedItemId)
+    {
+        var branchToRemove = AddedItem.FirstOrDefault(b => b.id == AddedItemId);
+        if (branchToRemove != null)
+        {
+            AddedItem.Remove(branchToRemove);
+        }
+    }
+
+    // declare value in all selected item depende the value of item
+    private void OnSelectItem(ItemMaintenance item)
+    {
+        selectedItemCode = item.itemNo;
+        selectedItemName = item.itemDescription;
+        selectedItemId = item.itemNo + " - " + item.itemDescription;
+        itemSearch = string.Empty;
+    }
+
+    // filtering data by searhing item
+    private void OnSearchItem(ChangeEventArgs e)
+    {
+        var seachItem = e.Value?.ToString()?.ToLower();
+
+        if (!string.IsNullOrEmpty(seachItem))
+        {
+            // Filter the items based on the search text and excluded added items
+            filteredItem = itemMaintenances
+                .Where(i => !AddedItem.Any(ai => ai.itemcode == i.itemNo) &&
+                            (i.itemNo.ToLower().Contains(seachItem) || i.itemDescription.ToLower().Contains(seachItem)))
+                .ToList();
+
+            itemSearch = seachItem;
+        }
+    }
+}

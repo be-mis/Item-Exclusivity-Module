@@ -1,0 +1,73 @@
+﻿@page "/"
+@using ItemExclusivity.Data
+@using ItemExclusivity.Models
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+@inject IMyDataConnection _data
+@inject IConfiguration Configuration
+
+@code {
+    private string? positions, Scompany, SuserId;
+
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     var uri = new Uri(Navigation.Uri);
+    //     var queryParams = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+
+    //     if (queryParams.TryGetValue("username", out var username) && queryParams.TryGetValue("session_id", out var sessionId) && queryParams.TryGetValue("position", out var position) && queryParams.TryGetValue("company", out var company) && queryParams.TryGetValue("userId", out var userId))
+    //     {
+    //         await JS.InvokeVoidAsync("sessionStorage.setItem", "username", username.First());
+    //         await JS.InvokeVoidAsync("sessionStorage.setItem", "session_id", sessionId.First());
+    //         await JS.InvokeVoidAsync("sessionStorage.setItem", "position", position.First());
+    //         await JS.InvokeVoidAsync("sessionStorage.setItem", "company", company.First());
+    //         await JS.InvokeVoidAsync("sessionStorage.setItem", "userId", userId.First());
+    //     }
+
+    //     // Redirect to EPC/ItemExclusivity.razor after the page loads
+    //     Navigation.NavigateTo("/nbfi/ItemExclusivity");
+    // }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // if (firstRender)
+        // {
+        //     var sessionId = await JS.InvokeAsync<string>("sessionStorage.getItem", "session_id");
+        //     positions = await JS.InvokeAsync<string>("sessionStorage.getItem", "position");
+        //     Scompany = await JS.InvokeAsync<string>("sessionStorage.getItem", "company");
+        //     SuserId = await JS.InvokeAsync<string>("sessionStorage.getItem", "userId");
+
+        //     Console.WriteLine("Company: " + Scompany);
+        //     Console.WriteLine("User ID: " + SuserId);
+
+        //     if (string.IsNullOrEmpty(sessionId))
+        //     {
+        //         Navigation.NavigateTo("http://192.168.0.7:8484/", true);
+        //         return;
+        //     }
+
+        //     if (positions == null) await UserInfo();
+
+        //     StateHasChanged();
+        // }
+    }
+
+    List<BrandBranch> branchlist = new List<BrandBranch>();
+    private List<string> userChains = new List<string>();
+    private List<string> userBranches = new List<string>();
+    private List<string> userCompanies = new List<string>();
+    private async Task UserInfo()
+    {
+        string branchsql = $"SELECT id, userID, chainCode, company, branchName FROM userBranchMaintenance WHERE userID={SuserId}";
+        branchlist = await _data.LoadData<BrandBranch, dynamic>(branchsql, new { }, Configuration.GetConnectionString("DefaultConnection"));
+
+        foreach (var chain in branchlist)
+        {
+            userChains.Add(chain.ChainCode);
+            userBranches.Add(chain.BranchName);
+            userCompanies.Add(chain.Company);
+        }
+
+        // await JS.InvokeVoidAsync("console.log", $"Chain: {userChain}");
+        // await JS.InvokeVoidAsync("console.log", $"Branch: {userBranch}");
+    }
+}

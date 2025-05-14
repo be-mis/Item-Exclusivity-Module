@@ -1,0 +1,1455 @@
+@page "/epc/ItemExclusivity"
+
+@using ItemExclusivity.Data
+@using ItemExclusivity.Models
+@using Microsoft.AspNetCore.Mvc
+@using NPOI.SS.UserModel;
+@using System.IO;
+@using System.Net.Http.Headers;
+@using NPOI.XSSF.UserModel
+
+@inject IJSRuntime IJSRuntime
+@inject IConfiguration Configuration
+@inject NavigationManager NavigationManager
+@inject IMyDataConnection _data
+
+<style>
+    li{
+        list-style-type: none; /* This hides the bullet point */
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    table {
+        width: 100%;
+    }
+
+    tr td {
+        font-size: 14px;
+    }
+
+        tr td a {
+            text-decoration: none
+        }
+
+            tr td a:hover {
+                color: #00A3AD;
+                font-weight: bold;
+            }
+
+    thead tr th {
+        padding: 4px 6px;
+    }
+
+    thead tr:hover {
+        background-color: white !important;
+    }
+
+    tbody tr td {
+        padding: 4px 6px;
+        border-top: 1px solid #ccc;
+        border-bottom: 1px solid #ccc;
+    }
+
+    tbody tr:hover {
+        background-color: #f8d7da;
+        color: black;
+        font-weight: bold;
+    }
+
+    .remove-button {
+        border: 1px solid #AA0061;
+        background-color: white;
+        padding: 2px 6px;
+        color: #AA0061;
+    }
+
+        .remove-button:hover {
+            color: #FFFFFF;
+            background-color: #AA0061;
+            border: 1px solid #AA0061;
+        }
+
+    .clear-button {
+        margin-top: auto;
+        width: fit-content;
+        border: 2px solid #4B5563;
+        background-color: #4B5563;
+        padding: 1px 16px;
+        color: white;
+        border-radius: 2px;
+    }
+
+        .clear-button:hover {
+            background-color: white;
+            color: #4B5563;
+        }
+    .exclude-button{
+        color: #AA0061;
+    }
+    .exclude-button:hover{
+            font-weight: bold;
+    }
+
+    .border-container {
+        border: 2px solid #00A3AD;
+        padding: 20px;
+        position: relative; /* Needed for absolute positioning of the legend */
+        font-weight: bold;
+        width: fit-content;
+        margin-right: auto;
+        margin-left: auto;
+    }
+
+    .legend {
+        color: #00A3AD;
+        background-color: white; /* Background color for the legend */
+        position: absolute; /* Positioning the legend */
+        top: -12px; /* Adjust as necessary */
+        left: 10px; /* Adjust as necessary */
+        padding: 0 5px; /* Padding around the legend text */
+        font-weight: bold; /* Make the legend text bold */
+    }
+
+    .pagination-number {
+border-radius: 2px;
+width: 30px;
+height: 30px;
+margin: 0px 10px;
+border: 1px solid #00A3AD;
+color: #00A3AD;
+background-color: none;
+}
+
+.pagination-next {
+background-color: #fff;
+border: none;
+}
+
+.pagination-next .icon-next {
+height: 25px;
+width: 20px;
+}
+
+.pagination-prev {
+background-color: #fff;
+border: none;
+}
+
+.pagination-prev .icon-prev {
+height: 25px;
+width: 20px;
+}
+
+.select-size {
+color: #00A3AD;
+margin-right: 10px;
+border: 1px solid #00A3AD;
+}
+
+button.active {
+background-color: #00A3AD;
+color: #ffffff;
+}
+
+.notification {
+padding: 15px;
+margin: 10px;
+border-radius: 5px;
+font-size: 16px;
+position: absolute; /* Set position to absolute */
+right: 20px; /* Position from the right */
+bottom: 20px; /* Position from the top */
+width: 350px; /* Set a width for the notification */
+z-index: 1000; /* Ensure it appears above other content */
+}
+
+.success {
+background-color: #d4edda;
+color: #00A3AD;
+border: 1px solid #c3e6cb;
+}
+
+.error {
+background-color: #f8d7da;
+color: #AA0061;
+border: 1px solid #f5c6cb;
+}
+
+.notification strong {
+margin-right: 5px;
+}
+</style>
+
+<div class="container">
+    <div class="form-top"></div>
+    <div class="form-content" style="padding: 20px;">
+        <div class="grid grid-cols-2">
+            <div class="col-span-1">
+                <p class="upload-memorandum">
+                    <span class="upload">Item </span>
+                    <span class="memorandum">Exclusivity</span>
+                </p>
+            </div>
+            <div class="col-span-1">
+                <button class="submit-button" @onclick="ExportToExcel" disabled="@string.IsNullOrEmpty(selectedType)">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="none" d="M8 17.5V15.5C8 14.6716 8.67157 14 9.5 14H14.5C15.3284 14 16 14.6716 16 15.5V17.5C16 18.3284 15.3284 19 14.5 19H9.5C8.67157 19 8 18.3284 8 17.5Z" stroke-width="1.5" stroke-linecap="round" />
+                        <path fill="currentcolor" stroke="none" d="M8 15.75V17.5C8 17.5852 8.0071 17.6687 8.02074 17.75H6.25C4.86929 17.75 3.75 16.6307 3.75 15.25V10.25C3.75 8.86929 4.86929 7.75 6.25 7.75H17.25C18.6307 7.75 19.75 8.86929 19.75 10.25V15.25C19.75 16.6307 18.6307 17.75 17.25 17.75H15.9793C15.9929 17.6687 16 17.5852 16 17.5V15.75H17.25C17.5261 15.75 17.75 15.5261 17.75 15.25V10.25C17.75 9.97386 17.5261 9.75 17.25 9.75H6.25C5.97386 9.75 5.75 9.97386 5.75 10.25V15.25C5.75 15.5261 5.97386 15.75 6.25 15.75H8ZM10.25 5.25C10.25 4.97386 10.4739 4.75 10.75 4.75H13.25C13.5261 4.75 13.75 4.97386 13.75 5.25V5.75C13.75 6.30228 14.1977 6.75 14.75 6.75C15.3023 6.75 15.75 6.30228 15.75 5.75V5.25C15.75 3.86929 14.6307 2.75 13.25 2.75H10.75C9.36929 2.75 8.25 3.86929 8.25 5.25V5.75C8.25 6.30228 8.69772 6.75 9.25 6.75C9.80228 6.75 10.25 6.30228 10.25 5.75V5.25Z" />
+                    </svg>
+                    Export 
+                </button>
+            </div>
+            <br />
+            <div class="col-span-2" style="display: flex; justify-content: space-between; gap: 20px;">
+                <div style="width:100%">
+                    <label>Chain*</label><br />
+                    <select class="select-input" @onchange="OnChainChanged" disabled="@(!string.IsNullOrEmpty(selectedChain) || isLoading)">
+                        <option value="">-- Select --</option>
+                        <option value="1">Variuos Chain</option>
+                        <option value="2">SM HOMEWORLD</option>
+                        <option value="3">OUR HOME</option>
+                    </select>
+                </div>
+                <div style="width:100%">
+                    <label>Category*</label><br />
+                    <select class="select-input" @onchange="OnCategoryChanged" disabled="@(!string.IsNullOrEmpty(selectedCategory) || string.IsNullOrEmpty(selectedChain))">
+                        <option value="">-- Select --</option>
+                        <option value="LAMPS">LAMPS</option>
+                        <option value="DECOR">DECOR</option>
+                        <option value="FRAMES">FRAMES</option>
+                        @if (selectedChain != "2")
+                        {
+                            <option value="CLOCKS">CLOCKS</option>
+                        }
+                        @if (selectedChain == "1")
+                        {
+                            <option value="STATIONERY">STATIONERY</option>
+                        }
+                    </select>
+                </div>
+                <div style="width:100%">
+                    <label>Store Classification*</label><br />
+                    <select class="select-input" @onchange="OnStoreClassificationChanged" disabled="@(!string.IsNullOrEmpty(selectedStoreClassification) || string.IsNullOrEmpty(selectedCategory))">
+                        <option value="">-- Select --</option>
+                        <option value="1">A STORES – EXTRA HIGH</option>
+                        <option value="2">B STORES – HIGH</option>
+                        <option value="3">C STORES - MEDIUM</option>
+                        <option value="4">D STORES - SMALL</option>
+                        <option value="5">E STORES - EXTRA SMALL</option>
+                    </select>
+                </div>
+                <div style="width:100%">
+                    <label>Transaction Type*</label><br />
+                    <select class="select-input" @onchange="OnTypeChanged" disabled="@(!string.IsNullOrEmpty(selectedType) || string.IsNullOrEmpty(selectedStoreClassification))">
+                        <option value="">-- Select --</option>
+                        <option value="CST-RepeatOrder">CST-RepeatOrder</option>
+                        <option value="CST-NewItems">CST-NewItems</option>
+                    </select>
+                </div>
+                <div style="width:fit-content; white-space: nowrap;height: auto; display: flex; flex-direction: column;">
+                    <button class="clear-button" @onclick="ClearDropDown">
+                        Clear Filter
+                    </button>
+                </div>
+                </div>
+            <br />
+
+            @if ( CanDisplayData)
+            {
+                <div class="border-container grid grid-cols-2 col-span-2">
+                    <span class="legend">Title Legend</span>
+                    <div class="col-span-1 flex flex-col">
+                        <i>
+                            A STORES – EXTRA HIGH = @extraHigh <br />
+                            B STORES – HIGH = @high <br />
+                            C STORES – MEDIUM = @medium <br />
+                        </i>
+                    </div>
+                    <div class="col-span-1 flex flex-col">
+                        <i>
+                            D STORES – SMALL = @small<br />
+                            E STORES – EXTRA SMALL = @extraSmall<br />
+                        </i>
+                    </div>
+                </div>
+            }
+
+            <div class="col-span-2">
+                <div class="accordion">
+                    <!-- Branch Accordion -->
+                    <div class="accordion-item">
+                        <input type="checkbox" id="accordion-1" class="accordion-checkbox">
+                        <label for="accordion-1" class="accordion-title">Branch</label>
+                        <div class="accordion-content">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th width="40%">Branch Code</th>
+                                        <th width="60%">Branch Name</th>
+                                    </tr>
+                                </thead>
+                                @if (CanDisplayData)
+                                {
+                                    @if (isLoading)
+                                    {
+                                        <p>Loading...</p>
+                                    }
+                                    else
+                                    {
+                                        @if (paginatedAllStoreClass != null && paginatedAllStoreClass.Any())
+                                        {
+                                            <tbody>
+                                                @foreach (var branch in paginatedAllStoreClass)
+                                                {
+                                                    <tr>
+                                                        <td>@branch.branchCode</td>
+                                                        <td>@branch.branchName</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        }
+                                        else
+                                        {
+                                            <tbody>
+                                                <tr>
+                                                    <td colspan="3" align="center"><p>No branches found.</p></td>
+                                                </tr>
+                                            </tbody>
+                                            
+                                        }
+                                    }
+                                }
+                            </table>
+                            @if (CanDisplayData)
+                            {
+                                <div class="col-span-2">
+                                    <div class="pagination">
+                                        <select class="select-size" @bind="pageSize" @oninput="PageSizeChanged">
+
+                                            <option value="5">5</option>
+                                            <option value="10" selected>10</option>
+                                            <option value="20">20</option>
+                                            <option value="50">50</option>
+                                            <option value="100">100</option>
+                                        </select>
+                                        @if (currentPage <= 1)
+                                        {
+                                            <button class="pagination-prev" @onclick="() => ChangePage(currentPage - 1)" disabled>
+                                                <svg class="icon-prev" viewBox="0 0 64 74" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M7.35169 27.7144L45.1028 3.73919C52.4262 -0.911806 62 4.34935 62 13.0248L62 60.9752C62 69.6507 52.4262 74.9118 45.1028 70.2608L7.35171 46.2857C0.547947 41.9647 0.547935 32.0353 7.35169 27.7144Z" stroke="#00A3AD" fill="#00A3AD" stroke-width="4" />
+                                                </svg>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button class="pagination-prev" @onclick="() => ChangePage(currentPage - 1)">
+                                                <svg class="icon-prev" viewBox="0 0 64 74" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M7.35169 27.7144L45.1028 3.73919C52.4262 -0.911806 62 4.34935 62 13.0248L62 60.9752C62 69.6507 52.4262 74.9118 45.1028 70.2608L7.35171 46.2857C0.547947 41.9647 0.547935 32.0353 7.35169 27.7144Z" stroke="#00A3AD" stroke-width="4" />
+                                                </svg>
+                                            </button>
+                                        }
+                                        @* <label>Page @currentPage of @totalPages</label> *@
+                                        @foreach (int i in GetPagesToDisplay(totalPages, currentPage))
+                                        {
+                                            if (i == -1)
+                                            {
+                                                <span style="width: 30px; height: 30px; margin-left: 10px;">...</span>
+                                            }
+                                            else
+                                            {
+                                                <button @onclick="() => SelectPage(i)" class="@(i == currentPage ? "active" : "") pagination-number ">
+                                                    @i
+                                                </button>
+                                            }
+                                        }
+                                        @if (currentPage >= totalPages)
+                                        {
+                                            <button class="pagination-next" @onclick="() => ChangePage(currentPage + 1)" disabled>
+                                                <svg class="icon-next" viewBox="0 0 64 74" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M56.6483 46.2857L18.8972 70.2608C11.5738 74.9118 2 69.6507 2 60.9752L2 13.0248C2 4.34935 11.5738 -0.911817 18.8972 3.73917L56.6483 27.7143C63.452 32.0353 63.4521 41.9647 56.6483 46.2857Z" stroke="#00A3AD" fill="#00A3AD" stroke-width="4" />
+                                                </svg>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button class="pagination-next" @onclick="() => ChangePage(currentPage + 1)">
+                                                <svg class="icon-next" viewBox="0 0 64 74" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M56.6483 46.2857L18.8972 70.2608C11.5738 74.9118 2 69.6507 2 60.9752L2 13.0248C2 4.34935 11.5738 -0.911817 18.8972 3.73917L56.6483 27.7143C63.452 32.0353 63.4521 41.9647 56.6483 46.2857Z" stroke="#00A3AD" stroke-width="4" />
+                                                </svg>
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Item Accordion -->
+                    <div class="accordion-item">
+                        <input type="checkbox" id="accordion-2" class="accordion-checkbox">
+                        <label for="accordion-2" class="accordion-title">
+                            <p class="upload-memorandum">Item
+                            </p>
+                        </label>
+                        <div class="accordion-content">
+                            <div class="grid grid-cols-2">
+                                <div class="col-span-1">
+                                    <input id="u_memoTitle" name="u_memoTitle" type="text" placeholder="Search..."  @bind="searchInput" @oninput="FilterRecords"/>
+                                </div>
+                                <br />
+                                <br />
+                                <div class="col-span-2">
+                                    <table>
+                                        <tr>
+                                            @* <th>Select</th> *@
+                                            <th>Item Code</th>
+                                            <th>Description</th>
+                                            <th>Quantity</th>
+                                        </tr>
+                                        @if (CanDisplayData)
+                                        {
+                                            @if (filteredAllItem != null && filteredAllItem.Any())
+                                            {
+                                                @if (branchMaintenances != null && branchMaintenances.Any())
+                                                {
+                                                    @if (!string.IsNullOrEmpty(searchInput))
+                                                    {
+                                                        foreach (var item in filteredItems)
+                                                        {
+                                                            <tr>
+                                                                <td>@item.itemNo</td>
+                                                                <td>@item.itemDescription</td>
+                                                                <td>
+                                                                    <input type="number" @bind="item.Quantity" min="0" step="1" />
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        foreach (var item in paginatedAllItem)
+                                                        {
+                                                            <tr>
+                                                                <td>@item.itemNo</td>
+                                                                <td>@item.itemDescription</td>
+                                                                <td>
+                                                                    <input type="number" @bind="item.Quantity" min="0" step="1" />
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <tr>
+                                                        <td colspan="3" align="center"><p>No branches found.</p></td>
+                                                    </tr>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <p>No Item found.</p>
+                                            }
+                                        }
+
+                                    </table>
+                                    @if (CanDisplayData)
+                                    {
+                                    <div class="col-span-2">
+                                        <div class="pagination">
+                                            <select class="select-size" @bind="pageSize1" @oninput="PageSizeChanged1">
+
+                                                <option value="5">5</option>
+                                                <option value="10" selected>10</option>
+                                                <option value="20">20</option>
+                                                <option value="50">50</option>
+                                                <option value="100">100</option>
+                                            </select>
+                                            @if (currentPage1 <= 1)
+                                            {
+                                                <button class="pagination-prev" @onclick="() => ChangePage1(currentPage1 - 1)" disabled>
+                                                    <svg class="icon-prev" viewBox="0 0 64 74" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M7.35169 27.7144L45.1028 3.73919C52.4262 -0.911806 62 4.34935 62 13.0248L62 60.9752C62 69.6507 52.4262 74.9118 45.1028 70.2608L7.35171 46.2857C0.547947 41.9647 0.547935 32.0353 7.35169 27.7144Z" stroke="#00A3AD" fill="#00A3AD" stroke-width="4" />
+                                                    </svg>
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <button class="pagination-prev" @onclick="() => ChangePage1(currentPage1 - 1)">
+                                                    <svg class="icon-prev" viewBox="0 0 64 74" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M7.35169 27.7144L45.1028 3.73919C52.4262 -0.911806 62 4.34935 62 13.0248L62 60.9752C62 69.6507 52.4262 74.9118 45.1028 70.2608L7.35171 46.2857C0.547947 41.9647 0.547935 32.0353 7.35169 27.7144Z" stroke="#00A3AD" stroke-width="4" />
+                                                    </svg>
+                                                </button>
+                                            }
+                                            @* <label>Page @currentPage of @totalPages</label> *@
+                                            @foreach (int i in GetPagesToDisplay1(totalPages1, currentPage1))
+                                            {
+                                                if (i == -1)
+                                                {
+                                                    <span style="width: 30px; height: 30px; margin-left: 10px;">...</span>
+                                                }
+                                                else
+                                                {
+                                                    <button @onclick="() => SelectPage1(i)" class="@(i == currentPage1 ? "active" : "") pagination-number ">
+                                                        @i
+                                                    </button>
+                                                }
+                                            }
+                                            @if (currentPage1 >= totalPages1)
+                                            {
+                                                <button class="pagination-next" @onclick="() => ChangePage1(currentPage1 + 1)" disabled>
+                                                    <svg class="icon-next" viewBox="0 0 64 74" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M56.6483 46.2857L18.8972 70.2608C11.5738 74.9118 2 69.6507 2 60.9752L2 13.0248C2 4.34935 11.5738 -0.911817 18.8972 3.73917L56.6483 27.7143C63.452 32.0353 63.4521 41.9647 56.6483 46.2857Z" stroke="#00A3AD" fill="#00A3AD" stroke-width="4" />
+                                                    </svg>
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <button class="pagination-next" @onclick="() => ChangePage1(currentPage1 + 1)">
+                                                    <svg class="icon-next" viewBox="0 0 64 74" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M56.6483 46.2857L18.8972 70.2608C11.5738 74.9118 2 69.6507 2 60.9752L2 13.0248C2 4.34935 11.5738 -0.911817 18.8972 3.73917L56.6483 27.7143C63.452 32.0353 63.4521 41.9647 56.6483 46.2857Z" stroke="#00A3AD" stroke-width="4" />
+                                                    </svg>
+                                                </button>
+                                            }
+                                        </div>
+                                    </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-span-2">
+                <div class="accordion">
+                    <!-- Branch Exception Accordion -->
+                    <div class="accordion-item">
+                        <input type="checkbox" id="accordion-3" class="accordion-checkbox">
+                        <label for="accordion-3" class="accordion-title">Exclusion</label>
+                        <div class="accordion-content">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th width="20%">Branch Code</th>
+                                        <th width="40%">Branch Name</th>
+                                        <th width="40%">Exclude</th>
+                                    </tr>
+                                </thead>
+                                @if (CanDisplayData)
+                                {
+                                    @if (isLoading)
+                                    {
+                                        <p>Loading...</p>
+                                    }
+                                    else
+                                    {
+                                        @if (branchMaintenances != null && branchMaintenances.Any())
+                                        {
+                                            <tbody>
+                                                @foreach (var branch in paginatedAllStoreClass.Select((item, idx) => new { item, idx }))
+                                                {
+                                                    <tr>
+                                                        <td>
+                                                            @if (@childVisible[branch.idx])
+                                                            {
+                                                                <button class="button-hide-child" @onclick="() => ShowExcludedItems(branch.item.branchCode)">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                                         width="24"
+                                                                         height="24"
+                                                                         viewBox="0 0 24 24"
+                                                                         fill="currentColor">
+                                                                        <path d="M12 16.172l-4.95-4.95a.996.996 0 1 1 1.414-1.414L12 13.344l3.536-3.536a.996.996 0 1 1 1.414 1.414l-4.95 4.95z" />
+                                                                    </svg>
+                                                                </button>
+                                                            }
+                                                            else
+                                                            {
+                                                                <button class="button-show-child" @onclick="() => ShowExcludedItems(branch.item.branchCode)">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                                         width="24"
+                                                                         height="24"
+                                                                         viewBox="0 0 24 24"
+                                                                         fill="currentColor">
+                                                                        <path d="M13.172 12L9.344 8.172a.996.996 0 011.414-1.414l5.656 5.656-5.656 5.656a.996.996 0 01-1.414-1.414L13.172 12z" />
+                                                                    </svg>
+                                                                </button>
+
+                                                            }
+                                                            @branch.item.branchCode
+                                                        </td>
+                                                        <td>@branch.item.branchName</td>
+                                                        <td>
+                                                            <input type="text" placeholder="Search Item..."
+                                                                   @oninput="(e) => OnSearchItem(branch.item.branchCode, e)" value="@branch.item.ItemValue" />
+
+                                                            @if (!string.IsNullOrEmpty(branch.item.ItemSearchText))
+                                                            {
+                                                                <ul>
+                                                                    @foreach (var item in branch.item.FilteredItems.OrderBy(o => o.itemNo))
+                                                                    {
+                                                                        <li @onclick="() => OnSelectItem(branch.item.branchCode, item)">
+                                                                            @item.itemNo - @item.itemDescription
+                                                                        </li>
+                                                                    }
+                                                                </ul>
+                                                            }
+
+                                                            <!-- Dropdown for adding new item, filtered to exclude already added items -->
+                                                            @* <select @onchange="OnItemSelected" value="@exclude" style="width: 50%; padding: 2px 10px!important;">
+                                                                <option value="">-- Select Item --</option>
+                                                                @foreach (var availableItem in itemMaintenances.Where(i => !IsItemAlreadyAdded(branch.item.branchCode, i.itemNo) && i.Quantity > 0))
+                                                                {
+                                                                    <option value="@availableItem.itemNo">@availableItem.itemNo</option>
+                                                                }
+                                                            </select> *@
+                                                            <button class="exclude-button" @onclick="() => AddItem(branch.item.branchCode)">Exclude</button>
+                                                        </td>
+                                                    </tr>
+                                                    @if (@childVisible[branch.idx])
+                                                    {
+                                                        <tr>
+                                                            <td colspan="3">
+                                                                <table style="background-color: white;">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th style="width:30%;">Item Code</th>
+                                                                            <th style="width:50%;">Item Description</th>
+                                                                            <th style="width:20%;"></th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+
+                                                                        <!-- Display existing exception items for this branch -->
+                                                                        @if (exceptionItems != null && exceptionItems.Count > 0)
+                                                                        {
+                                                                            var branchExceptions = exceptionItems.FirstOrDefault(e => e.BranchCode == branch.item.branchCode);
+                                                                            if (branchExceptions != null && branchExceptions.Items.Any())
+                                                                            {
+                                                                                @foreach (var except in branchExceptions.Items)
+                                                                                {
+                                                                                    <tr>
+                                                                                        <td>@except</td>
+                                                                                        <td>
+                                                                                            @if (itemMaintenances.Any(i => i.itemNo == except))
+                                                                                            {
+                                                                                                @* Display item description if item is not found in itemMaintenances *@
+                                                                                                @itemMaintenances.FirstOrDefault(i => i.itemNo == except).itemDescription
+                                                                                            }
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            <button class="remove-button" @onclick="() => RemoveExceptionItem(branchExceptions, except)">
+                                                                                                <svg xmlns="http://www.w3.org/2000/svg" height="15" width="15" class="ionicon" viewBox="0 0 512 512"><path d="M112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" /><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M80 112h352" /><path d="M192 112V72h0a23.93 23.93 0 0124-24h80a23.93 23.93 0 0124 24h0v40M256 176v224M184 176l8 224M328 176l-8 224" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" /></svg>
+                                                                                            </button>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    </tbody>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+                                        }
+                                        else
+                                        {
+                                            <tbody>
+                                                <tr>
+                                                    <td colspan="3" align="center"><p>No branches found.</p></td>
+                                                </tr>
+                                            </tbody>
+                                        }
+                                    }
+                                }
+                            </table>
+                            @if (CanDisplayData)
+                            {
+                            <div class="col-span-2">
+                                <div class="pagination">
+                                    <select class="select-size" @bind="pageSize" @oninput="PageSizeChanged">
+
+                                        <option value="5">5</option>
+                                        <option value="10" selected>10</option>
+                                        <option value="20">20</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                    @if (currentPage <= 1)
+                                    {
+                                        <button class="pagination-prev" @onclick="() => ChangePage(currentPage - 1)" disabled>
+                                            <svg class="icon-prev" viewBox="0 0 64 74" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M7.35169 27.7144L45.1028 3.73919C52.4262 -0.911806 62 4.34935 62 13.0248L62 60.9752C62 69.6507 52.4262 74.9118 45.1028 70.2608L7.35171 46.2857C0.547947 41.9647 0.547935 32.0353 7.35169 27.7144Z" stroke="#00A3AD" fill="#00A3AD" stroke-width="4" />
+                                            </svg>
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button class="pagination-prev" @onclick="() => ChangePage(currentPage - 1)">
+                                            <svg class="icon-prev" viewBox="0 0 64 74" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M7.35169 27.7144L45.1028 3.73919C52.4262 -0.911806 62 4.34935 62 13.0248L62 60.9752C62 69.6507 52.4262 74.9118 45.1028 70.2608L7.35171 46.2857C0.547947 41.9647 0.547935 32.0353 7.35169 27.7144Z" stroke="#00A3AD" stroke-width="4" />
+                                            </svg>
+                                        </button>
+                                    }
+                                    @* <label>Page @currentPage of @totalPages</label> *@
+                                    @foreach (int i in GetPagesToDisplay(totalPages, currentPage))
+                                    {
+                                        if (i == -1)
+                                        {
+                                            <span style="width: 30px; height: 30px; margin-left: 10px;">...</span>
+                                        }
+                                        else
+                                        {
+                                            <button @onclick="() => SelectPage(i)" class="@(i == currentPage ? "active" : "") pagination-number ">
+                                                @i
+                                            </button>
+                                        }
+                                    }
+                                    @if (currentPage >= totalPages)
+                                    {
+                                        <button class="pagination-next" @onclick="() => ChangePage(currentPage + 1)" disabled>
+                                            <svg class="icon-next" viewBox="0 0 64 74" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M56.6483 46.2857L18.8972 70.2608C11.5738 74.9118 2 69.6507 2 60.9752L2 13.0248C2 4.34935 11.5738 -0.911817 18.8972 3.73917L56.6483 27.7143C63.452 32.0353 63.4521 41.9647 56.6483 46.2857Z" stroke="#00A3AD" fill="#00A3AD" stroke-width="4" />
+                                            </svg>
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button class="pagination-next" @onclick="() => ChangePage(currentPage + 1)">
+                                            <svg class="icon-next" viewBox="0 0 64 74" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M56.6483 46.2857L18.8972 70.2608C11.5738 74.9118 2 69.6507 2 60.9752L2 13.0248C2 4.34935 11.5738 -0.911817 18.8972 3.73917L56.6483 27.7143C63.452 32.0353 63.4521 41.9647 56.6483 46.2857Z" stroke="#00A3AD" stroke-width="4" />
+                                            </svg>
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@if (SuccessNotif)
+{
+    <div class="notification success">
+        <strong>Success!</strong><br /> Your operation was completed successfully.
+    </div>
+}
+
+@if (ErrorNotif)
+{
+    <div class="notification error">
+        <strong>Error!</strong><br />Something went wrong. Please try again.
+    </div>
+
+}
+@code
+{
+    private string? extraHigh, high, medium, small, extraSmall, exclude;
+    private bool isLoading = false;
+    private bool? connectionSuccessful;
+    private string? errorMessage, selectedStoreClassification, selectedType, selectedChain, newItem;
+    private string? selectedCategory { get; set; }
+    private DateTime dateNow = DateTime.Now;
+    private List<BranchMaintenance> branchMaintenances = new List<BranchMaintenance>();
+    private List<BranchMaintenance>? filteredAllStoreClass = new List<BranchMaintenance>();
+    private List<ItemMaintenance> itemMaintenances = new List<ItemMaintenance>();
+    private List<ItemMaintenance> filteredAllItem = new List<ItemMaintenance>();
+    private List<ExceptionItem> exceptionItems = new List<ExceptionItem>();
+    private List<ExclusivityLogs> exclusivityLogs = new List<ExclusivityLogs>();
+    private ExceptionItem newExceptionItem = new ExceptionItem { Items = new List<string>() };
+    private bool isAddingNewItem = false;
+    private bool[] childVisible;
+    int logsId;
+
+    private bool ErrorNotif = false;
+    private bool SuccessNotif = false;
+    private string? searchInput = "";
+
+    private bool CanDisplayData { get; set; } = false;
+
+    private void OnItemSelected(ChangeEventArgs e) => newItem = e.Value.ToString();
+
+    // adding item to temp list
+    private void AddItem(string branchCode)
+    {
+        if (!string.IsNullOrWhiteSpace(newItem))
+        {
+            // Find the exception list for the branch
+            var branchExceptions = exceptionItems.FirstOrDefault(e => e.BranchCode == branchCode);
+
+            // If no exceptions exist for the branch, create a new entry
+            if (branchExceptions == null)
+            {
+                branchExceptions = new ExceptionItem
+                    {
+                        BranchCode = branchCode,
+                        Items = new List<string>(),
+                        IsEditing = true // Assuming this controls edit mode
+                    };
+                exceptionItems.Add(branchExceptions);
+            }
+
+            // Add the new item to the branch's exception items
+            if (!branchExceptions.Items.Contains(newItem))
+            {
+                branchExceptions.Items.Add(newItem);
+            }
+
+            // Clear the selected item
+            newItem = string.Empty;
+
+            exclude = string.Empty;
+
+            // Clear the input field for the specific branch
+            var branch = branchMaintenances.FirstOrDefault(b => b.branchCode == branchCode);
+            if (branch != null)
+            {
+                branch.ItemValue = string.Empty; // Clear the input field
+            }
+
+            StateHasChanged(); // Trigger UI update
+        }
+    }
+
+    // don't show the item if already added to temporary item list
+    private bool IsItemAlreadyAdded(string branchCode, string itemNo)
+    {
+        var branchExceptions = exceptionItems.FirstOrDefault(e => e.BranchCode == branchCode);
+        if (branchExceptions != null)
+        {
+            return branchExceptions.Items.Contains(itemNo);
+        }
+        return false;
+    }
+
+    // removing item to temp list
+    private void RemoveItem(string item)
+    {
+        newExceptionItem.Items.Remove(item);
+    }
+
+    // remove item to excluded list
+    private void RemoveExceptionItem(ExceptionItem item, string except)
+    {
+        item.Items.Remove(except);
+        if (item.Items.Count == 0)
+        {
+            exceptionItems.Remove(item);
+        }
+        StateHasChanged();
+    }
+
+    // get branch depends on selected category and chain
+    private async Task GetBranchz()
+    {
+        try
+        {
+            isLoading = true;
+            string getChainCode = $@"SELECT e.branchCode, e.branchName, c.epcCampaignChain, s.name as storeName
+                                    FROM epcbranchmaintenance e
+                                    JOIN epcbranchclass c ON c.branchcode = e.branchCode
+                                    JOIN store_classification s ON s.Id = c.{selectedCategory}Classification
+                                    WHERE c.epcCampaignChain = {selectedChain} AND c.{selectedCategory}Classification = {selectedStoreClassification}";
+            branchMaintenances = await _data.LoadData<BranchMaintenance, dynamic>(getChainCode, new { }, Configuration.GetConnectionString("DefaultConnection"));
+            filteredAllStoreClass = branchMaintenances;
+            childVisible = new bool[branchMaintenances.Count()];
+            await ChangePage(1);
+            await GetItems(); // call function
+        }
+        catch (Exception ex)
+        {
+            // Handle error (log or display an error message)
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    // get items depends on selected category and chain
+    private async Task GetItems()
+    {
+        try
+        {
+            string? chainletter = selectedStoreClassification switch
+            {
+                "1" => "A",
+                "2" => "B",
+                "3" => "C",
+                "4" => "D",
+                "5" => "E",
+                _=> null
+            };
+            string? sChain = selectedChain switch
+            {
+                "1" => "vChain",
+                "2" => "sm",
+                "3" => "oHOME",
+                _ => null
+            };
+
+            string getItems = $@"SELECT b.itemNo, b.subDepartment, b.ItemDescription
+                                FROM epc_items_barcode b
+                                JOIN epc_item_exclusive e
+                                ON e.itemNo = b.ItemNo
+                                WHERE b.subDepartment = '{selectedCategory}' AND e.{sChain}{chainletter} = 1";
+            // Console.WriteLine($"Item SQL: {getItems}");
+            itemMaintenances = await _data.LoadData<ItemMaintenance, dynamic>(getItems, new { }, Configuration.GetConnectionString("DefaultConnection"));
+            filteredAllItem = itemMaintenances;
+            await ChangePage1(1);
+        }
+        catch (Exception ex)
+        {
+            // Handle error (log or display an error message)
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void OnChainChanged(ChangeEventArgs e)
+    {
+        selectedChain = e.Value.ToString();
+        CheckAndDisplayData();
+    }
+
+    private void OnCategoryChanged(ChangeEventArgs e)
+    {
+        selectedCategory = e.Value.ToString();
+        CheckAndDisplayData();
+    }
+
+    private void OnStoreClassificationChanged(ChangeEventArgs e)
+    {
+        selectedStoreClassification = e.Value.ToString();
+        CheckAndDisplayData();
+    }
+
+    private void OnTypeChanged(ChangeEventArgs e)
+    {
+        selectedType = e.Value.ToString();
+        CheckAndDisplayData();
+    }
+
+    // checking if all required selection is not empty and display the data
+    private async void CheckAndDisplayData()
+    {
+        // Check if all the selections are not null or empty
+        if (!string.IsNullOrEmpty(selectedChain) &&
+            !string.IsNullOrEmpty(selectedCategory) &&
+            !string.IsNullOrEmpty(selectedStoreClassification) &&
+            !string.IsNullOrEmpty(selectedType))
+        {
+            CanDisplayData = true;
+
+            // Create a dictionary for pricing tiers based on chain and category, this ledger
+            var pricingTiers = new Dictionary<string, Dictionary<string, (string ExtraHigh, string High, string Medium, string Small, string ExtraSmall)>>()
+            {
+                { "1", new Dictionary<string, (string, string, string, string, string)>
+                    {
+                        { "LAMPS", ("₱65,000 and above sold", "₱40,000 to ₱64,999 sold", "₱25,000 to ₱39,999 sold", "₱15,000 to ₱24,999 sold", "₱14,999 below sold") },
+                        { "DECOR", ("₱100,000 and above sold", "₱70,000 to ₱99,999 sold", "₱50,000 to ₱69,999 sold", "₱30,000 to ₱49,999 sold", "₱29,999 below sold") },
+                        { "CLOCKS", ("₱50,000 and above sold", "₱30,000 to ₱49,999 sold", "₱20,000 to ₱29,999 sold", "₱10,000 to ₱19,999 sold", "₱9,999 below sold") },
+                        { "STATIONERY", ("₱20,000 and above sold", "₱10,000 to ₱19,999 sold", "₱6,000 to ₱9,999 sold", "₱4,000 to ₱5,999 sold", "₱3,999 below sold") }
+                    }
+                },
+                { "2", new Dictionary<string, (string, string, string, string, string)>
+                    {
+                        { "LAMPS", ("₱75,000 and above sold", "₱45,000 to ₱74,999 sold", "₱30,000 to ₱44,999 sold", "₱15,000 to ₱29,999 sold", "₱14,999 below sold") },
+                        { "DECOR", ("₱25,000 and above sold", "₱20,000 to ₱24,999 sold", "₱15,000 to ₱19,999 sold", "₱10,000 to ₱14,999 sold", "₱9,999 below sold") },
+                        { "FRAMES", ("₱75,000 and above sold", "₱45,000 to ₱74,999 sold", "₱30,000 to ₱44,999 sold", "₱15,000 to ₱29,999 sold", "₱14,999 below sold") }
+                    }
+                },
+                { "3", new Dictionary<string, (string, string, string, string, string)>
+                    {
+                        { "LAMPS", ("₱70,000 and above sold", "₱45,000 to ₱69,999 sold", "₱30,000 to ₱44,999 sold", "₱15,000 to ₱29,999 sold", "₱14,999 below sold") },
+                        { "DECOR", ("₱70,000 and above sold", "₱45,000 to ₱69,999 sold", "₱30,000 to ₱44,999 sold", "₱15,000 to ₱29,999 sold", "₱14,999 below sold") },
+                        { "FRAMES", ("₱45,000 and above sold", "₱30,000 to ₱44,999 sold", "₱20,000 to ₱29,999 sold", "₱10,000 to ₱19,999 sold", "₱9,999 below sold") },
+                        { "CLOCKS", ("₱25,000 and above sold", "₱15,000 to ₱24,999 sold", "₱10,000 to ₱14,999 sold", "₱5,000 to ₱9,999 sold", "₱4,999 below sold") }
+                    }
+                }
+            };
+
+            // Get the pricing tiers based on selectedChain and selectedCategory
+            if (pricingTiers.TryGetValue(selectedChain, out var categoryPricing) && categoryPricing.TryGetValue(selectedCategory, out var pricing))
+            {
+                extraHigh = pricing.ExtraHigh;
+                high = pricing.High;
+                medium = pricing.Medium;
+                small = pricing.Small;
+                extraSmall = pricing.ExtraSmall;
+            }
+
+            await GetBranchz(); // call function
+        }
+        else
+        {
+            CanDisplayData = false;
+        }
+
+        // Force UI to update
+        StateHasChanged();
+    }
+
+    // exporting data to excel
+    private async Task ExportToExcel()
+    {
+        if (string.IsNullOrEmpty(selectedType))
+        {
+            // You can display a message to the user here, e.g.
+            await IJSRuntime.InvokeVoidAsync("showAlert", "Please select a transfer type before exporting.");
+            return;
+        }
+        // Check if any item has a negative quantity
+        if (itemMaintenances.Any(item => item.Quantity < 0))
+        {
+            await IJSRuntime.InvokeVoidAsync("showAlert", "Quantity cannot be negative. Please correct the values before exporting.");
+            return;
+        }
+        try{
+
+        
+
+        using (var workbook = new XSSFWorkbook())
+        {
+            var sheet = workbook.CreateSheet("Transfer Orders");
+
+            // Creating header
+            var headerRow = sheet.CreateRow(1);
+            headerRow.CreateCell(0).SetCellValue("Card Code");
+            headerRow.CreateCell(1).SetCellValue("Transfer Type");
+            headerRow.CreateCell(2).SetCellValue("Source Warehouse");
+            headerRow.CreateCell(3).SetCellValue("Target Warehouse");
+            headerRow.CreateCell(4).SetCellValue("16 Digit Item Code");
+            headerRow.CreateCell(5).SetCellValue("Quantity");
+
+            // Creating the list of transfer orders
+            var transferOrders = new List<TransferOrder>();
+
+            // Populate the transferOrders list
+            foreach (var branch in branchMaintenances)
+            {
+                foreach (var item in itemMaintenances)
+                {
+                    // Check if the item is not in the exception list
+                    if (!exceptionItems.Any(e => e.BranchCode == branch.branchCode && e.Items.Contains(item.itemNo)) && item.Quantity > 0)
+                    {
+                        transferOrders.Add(new TransferOrder
+                            {
+                                CardCode = branch.branchCode,
+                                TransferType = selectedType,
+                                SourceWarehouse = "01-RLS",
+                                TargetWarehouse = branch.branchCode.Replace("C-", ""),
+                                ItemCode = item.itemNo,
+                                Quantity = item.Quantity
+                            });
+                    }
+                }
+            }
+
+            if (!transferOrders.Any())
+            {
+                await IJSRuntime.InvokeVoidAsync("showAlert", "No items with quantity to export.");
+                return;
+            }
+
+            // Adding data to the sheet
+            for (int i = 0; i < transferOrders.Count; i++)
+            {
+                var order = transferOrders[i];
+                var row = sheet.CreateRow(i + 2);  // Data starts from the second row
+                row.CreateCell(0).SetCellValue(order.CardCode);
+                row.CreateCell(1).SetCellValue(order.TransferType);
+                row.CreateCell(2).SetCellValue(order.SourceWarehouse);
+                row.CreateCell(3).SetCellValue(order.TargetWarehouse);
+                row.CreateCell(4).SetCellValue(order.ItemCode);
+                row.CreateCell(5).SetCellValue(order.Quantity);
+            }
+
+            // Write to MemoryStream
+            using (var stream = new MemoryStream())
+            {
+                string? chainletter = selectedStoreClassification switch
+                {
+                    "1" => "A Stores - Extra High",
+                    "2" => "B Stores - High",
+                    "3" => "C Stores - Medium",
+                    "4" => "D Stores - Small",
+                    "5" => "E Stores - Extra Small",
+                    _ => null
+                };
+                string? sChain = selectedChain switch
+                {
+                    "1" => "Various Chain",
+                    "2" => "SM Homeworld",
+                    "3" => "Our Home",
+                    _ => null
+                };
+
+                workbook.Write(stream);
+                var byteArray = stream.ToArray();
+                var fileName = $"{sChain}_{selectedCategory}_{chainletter}_{dateNow.ToString("MM-dd-yyyy")}.xlsx";
+
+                // Convert to base64 and trigger download via JS Interop
+                await IJSRuntime.InvokeVoidAsync("downloadFileFromStream", fileName, new DotNetStreamReference(stream: new MemoryStream(byteArray)));
+            }
+        }
+
+        await GetLogs();
+        }
+        catch(Exception ex){
+            await IJSRuntime.InvokeVoidAsync("showAlert", $"Error in Exporting {ex.Message}");
+        }
+    }
+
+    // saving the logs to database
+    private async Task GetLogs()
+    {
+        // Map `selectedChain` and `selectedStoreClassification` to log values.
+        string chainLog = selectedChain switch
+        {
+            "1" => "Variuos Chain",
+            "2" => "SM HOMEWORLD",
+            "3" => "OUR HOME",
+            _ => "Unknown Chain"  // Default case for safety
+        };
+        string classificationLog = selectedStoreClassification switch
+        {
+            "1" => "A STORES – EXTRA HIGH",
+            "2" => "B STORES – HIGH",
+            "3" => "C STORES - MEDIUM",
+            "4" => "D STORES - SMALL",
+            "5" => "E STORES - EXTRA SMALL",
+            _ => "Unknown Classification"  // Default case for safety
+        };
+
+        // Insert main exclusivity log
+        string insertLog = $@"INSERT INTO epc_item_exclusivity_logs
+                          (selectedChain, selectedCategory, selectedStoreClass, selectedType, logsDate)
+                          VALUES (@selectedChain, @selectedCategory, @selectedStoreClass, @selectedType, @logsDate)";
+
+        var parameters = new
+        {
+            selectedChain = chainLog,
+            selectedCategory = selectedCategory,
+            selectedStoreClass = classificationLog,
+            selectedType = selectedType,
+            logsDate =  dateNow
+        };
+        await _data.SaveData(insertLog, parameters, Configuration.GetConnectionString("DefaultConnection"));
+
+        // Retrieve the last inserted log ID
+        string getLogsIdQuery = "SELECT id FROM epc_item_exclusivity_logs ORDER BY id DESC LIMIT 1";
+        exclusivityLogs = await _data.LoadData<ExclusivityLogs, dynamic>(getLogsIdQuery, new { }, Configuration.GetConnectionString("DefaultConnection"));
+        logsId = exclusivityLogs.FirstOrDefault()?.Id ?? 0;
+
+        // Batch insert branch logs
+        var branchValues = branchMaintenances
+            .Select(branch => $"({logsId}, '{branch.branchCode}')")
+            .ToList();
+
+        if (branchValues.Any())
+        {
+            string insertBranchLog = $@"INSERT INTO epc_branch_list_logs (exclusive_logs_id, branchCode_logs) VALUES {string.Join(",", branchValues)}";
+            await _data.SaveData(insertBranchLog, new { }, Configuration.GetConnectionString("DefaultConnection"));
+        }
+
+        // Batch insert item logs
+        var itemValues = itemMaintenances
+            .Where(item => item.Quantity > 0)
+            .Select(item => $"({logsId}, '{item.itemNo}', '{item.itemDescription}', '{item.Quantity}')")
+            .ToList();
+
+        if (itemValues.Any())
+        {
+            string insertItemLog = $@"INSERT INTO epc_item_list_logs (exclusive_logs_id, itemNo_logs, itemDescription_logs, item_quantity_logs) VALUES {string.Join(",", itemValues)}";
+            await _data.SaveData(insertItemLog, new { }, Configuration.GetConnectionString("DefaultConnection"));
+        }
+
+        foreach (var exc in exceptionItems)
+        {
+            string insertExBranch = $@"INSERT INTO epc_exception_logs (exclusive_logs_id, branchCode) VALUES (@exclusive_logs_id, @branchCode)";
+            await _data.SaveData(insertExBranch, new { exclusive_logs_id = logsId, branchCode = exc.BranchCode }, Configuration.GetConnectionString("DefaultConnection"));
+
+            var exceptionItemsValues = exc.Items
+                .Select(item => $"('{exc.BranchCode}', '{item}')")
+                .ToList();
+
+            if (exceptionItemsValues.Any())
+            {
+                string insertExItemLog = $@"INSERT INTO epc_exception_item_logs (branchCode, item) VALUES {string.Join(",", exceptionItemsValues)}";
+                await _data.SaveData(insertExItemLog, new { }, Configuration.GetConnectionString("DefaultConnection"));
+            }
+            Console.WriteLine("Done saving Logs");
+        }
+    }
+
+    private void ShowExcludedItems(string selectedBranchCode)
+    {
+        int index = branchMaintenances.FindIndex(f => f.branchCode.Equals(selectedBranchCode, StringComparison.OrdinalIgnoreCase));
+        childVisible[index] = !childVisible[index];
+    }
+
+    private int GetChildIndex(string branchCode)
+    {
+        int index = 0;
+        foreach (var branch in branchMaintenances)
+        {
+            // Console.WriteLine($"IDb: {index}");
+
+            if (branch.branchCode == branchCode)
+            {
+                // Console.WriteLine($"IDf: {index}");
+                return index;
+            }
+            index++;
+            // Console.WriteLine($"IDa: {index}");
+        }
+        return -1;
+    }
+
+    // reload the page
+    private async Task ClearDropDown()
+    {
+        await IJSRuntime.InvokeVoidAsync("window.location.reload");
+    }
+
+    // filtering depends on inputted in search bar
+    private void OnSearchItem(string branchCode, ChangeEventArgs e)
+    {
+        var searchText = e.Value?.ToString()?.ToLower();
+
+        // Find the specific branch
+        var branch = branchMaintenances.FirstOrDefault(b => b.branchCode == branchCode);
+        if (branch != null)
+        {
+            branch.ItemSearchText = searchText;
+            if (!string.IsNullOrEmpty(searchText))
+            {
+                // Filter items specific to the branch
+                branch.FilteredItems = itemMaintenances
+                    .Where(i => !IsItemAlreadyAdded(branch.branchCode, i.itemNo) && i.Quantity > 0 &&
+                                (i.itemNo.ToLower().Contains(searchText) || i.itemDescription.ToLower().Contains(searchText)))
+                    .ToList();
+
+                branch.ItemSearchText = searchText;
+            }
+            else
+            {
+                // Reset the filtered items if search text is cleared
+                branch.FilteredItems = itemMaintenances
+                    .Where(i => !IsItemAlreadyAdded(branch.branchCode, i.itemNo) && i.Quantity > 0)
+                    .ToList();
+
+                branch.ItemSearchText = string.Empty;
+            }
+
+            StateHasChanged();
+        }
+    }
+
+    private void OnSelectItem(string branchCode, ItemMaintenance selectedItem)
+    {
+        var branch = branchMaintenances.FirstOrDefault(b => b.branchCode == branchCode);
+        if (branch != null)
+        {
+            // Update newItem with the selected item's code
+            newItem = selectedItem.itemNo;
+
+            // Optionally, update the input field's value for the branch
+            branch.ItemValue = selectedItem.itemNo + " - " + selectedItem.itemDescription;
+
+            // Clear the search text
+            branch.ItemSearchText = string.Empty;
+
+            // Clear the filtered items list
+            branch.FilteredItems = new List<ItemMaintenance>();
+
+            StateHasChanged(); // Trigger UI update
+        }
+    }
+
+    private List<ItemMaintenance> filteredItemsTemp = null;
+    private List<ItemMaintenance> filteredItems = new List<ItemMaintenance>();
+
+    private async Task FilterRecords(ChangeEventArgs e)
+    {
+        string searchTerm = (string)e.Value;
+        await FilterRecordsBySearchTerm(searchTerm);
+    }
+
+    private async Task FilterRecordsBySearchTerm(string searchTerm)
+    {
+        if (!string.IsNullOrEmpty(searchTerm))
+        {
+            if (filteredItemsTemp == null)
+                filteredItems = filteredAllItem.Where(pdf => pdf.itemNo.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) || pdf.itemDescription.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+            else
+                filteredItems = filteredItemsTemp.Where(pdf => pdf.itemNo.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) || pdf.itemDescription.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+        else
+        {
+            if (filteredItemsTemp != null)
+                filteredItems = filteredItemsTemp.Where(pdf => pdf.itemNo.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) || pdf.itemDescription.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+            else
+                filteredItems = filteredAllItem;
+        }
+        // await ChangePage(1);
+        StateHasChanged(); // force to change UI
+    }
+
+    private int currentPage = 1;
+    private int totalPages;
+    private int pageSize = 10;
+    private List<BranchMaintenance>? paginatedAllStoreClass = new List<BranchMaintenance>();
+
+    private async Task ChangePage(int page)
+    {
+        currentPage = page;
+        totalPages = (int)Math.Ceiling((double)filteredAllStoreClass.Count / pageSize);
+        paginatedAllStoreClass = filteredAllStoreClass.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+        StateHasChanged();
+    }
+
+    private void PageSizeChanged(ChangeEventArgs e)
+    {
+        pageSize = int.Parse((e.Value as string)?.Trim());
+        currentPage = 1;
+        ChangePage(1);
+    }
+
+    private IEnumerable<int> GetPagesToDisplay(int totalPages, int currentPage)
+    {
+        const int pagesToShow = 5;
+
+        if (totalPages <= pagesToShow)
+        {
+            return Enumerable.Range(1, totalPages);
+        }
+
+        var pages = new List<int>();
+
+        // Add the first two pages
+        pages.Add(1);
+        if (totalPages > 2)
+        {
+            pages.Add(2);
+        }
+
+        // Add a separator if necessary
+        if (currentPage > 4)
+        {
+            pages.Add(-1); // -1 represents the "..." separator
+        }
+
+        // Add the current page and its neighbors
+        var start = Math.Max(3, currentPage - 1);
+        var end = Math.Min(totalPages - 2, currentPage + 1);
+        for (int i = start; i <= end; i++)
+        {
+            pages.Add(i);
+        }
+
+        // Add a separator if necessary
+        if (currentPage < totalPages - 3)
+        {
+            pages.Add(-1); // -1 represents the "..." separator
+        }
+
+        // Add the last two pages
+        if (totalPages > 1)
+        {
+            pages.Add(totalPages - 1);
+        }
+        pages.Add(totalPages);
+
+        return pages;
+    }
+
+    private async Task SelectPage(int selectedPage)
+    {
+        await ChangePage(selectedPage);
+    }
+
+    private int currentPage1 = 1;
+    private int totalPages1;
+    private int pageSize1 = 10;
+    private List<ItemMaintenance>? paginatedAllItem = new List<ItemMaintenance>();
+
+    private async Task ChangePage1(int page1)
+    {
+        currentPage1 = page1;
+        totalPages1 = (int)Math.Ceiling((double)filteredAllItem.Count / pageSize1);
+        paginatedAllItem = filteredAllItem.Skip((page1 - 1) * pageSize1).Take(pageSize1).ToList();
+        StateHasChanged();
+    }
+
+    private void PageSizeChanged1(ChangeEventArgs e)
+    {
+        pageSize1 = int.Parse((e.Value as string)?.Trim());
+        currentPage1 = 1;
+        ChangePage1(1);
+    }
+
+    private IEnumerable<int> GetPagesToDisplay1(int totalPages1, int currentPage1)
+    {
+        const int pagesToShow1 = 5;
+
+        if (totalPages1 <= pagesToShow1)
+        {
+            return Enumerable.Range(1, totalPages1);
+        }
+
+        var pages1 = new List<int>();
+
+        // Add the first two pages
+        pages1.Add(1);
+        if (totalPages1 > 2)
+        {
+            pages1.Add(2);
+        }
+
+        // Add a separator if necessary
+        if (currentPage1 > 4)
+        {
+            pages1.Add(-1); // -1 represents the "..." separator
+        }
+
+        // Add the current page and its neighbors
+        var start1 = Math.Max(3, currentPage1 - 1);
+        var end1 = Math.Min(totalPages1 - 2, currentPage1 + 1);
+        for (int i = start1; i <= end1; i++)
+        {
+            pages1.Add(i);
+        }
+
+        // Add a separator if necessary
+        if (currentPage1 < totalPages1 - 3)
+        {
+            pages1.Add(-1); // -1 represents the "..." separator
+        }
+
+        // Add the last two pages
+        if (totalPages1 > 1)
+        {
+            pages1.Add(totalPages1 - 1);
+        }
+        pages1.Add(totalPages1);
+
+        return pages1;
+    }
+
+    private async Task SelectPage1(int selectedPage1)
+    {
+        await ChangePage1(selectedPage1);
+    }
+}

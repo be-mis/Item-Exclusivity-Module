@@ -1,0 +1,477 @@
+@using ItemExclusivity.Data
+@using ItemExclusivity.Models
+@inject IJSRuntime IJSRuntime
+@inject IConfiguration Configuration
+@inject NavigationManager NavigationManager
+@inject IMyDataConnection _data
+@using Microsoft.AspNetCore.Components.Web
+@using System.Diagnostics
+@inject NavigationManager Navigation
+
+<style>
+    .add-store-modal-content {
+        background-color: #fefefe;
+        margin: 5% auto; /* 15% from the top and centered */
+        border: 1px solid #888;
+        width: 70%;/* Could be more or less, depending on screen size */
+    }
+
+    .delete-button {
+        border: 1px solid #AA0061 !important;
+        background-color: white;
+        color: #AA0061;
+        border-radius: 2px;
+    }
+
+        .delete-button:hover {
+            color: #FFFFFF;
+            background-color: #AA0061;
+            border: 1px solid #AA0061;
+        }
+
+
+    .notification {
+        padding: 15px;
+        margin: 10px;
+        border-radius: 5px;
+        font-size: 16px;
+        position: absolute; /* Set position to absolute */
+        right: 20px; /* Position from the right */
+        bottom: 20px; /* Position from the top */
+        width: 350px; /* Set a width for the notification */
+        z-index: 1000; /* Ensure it appears above other content */
+    }
+
+    .success {
+        background-color: #d4edda;
+        color: #00A3AD;
+        border: 1px solid #c3e6cb;
+    }
+
+    .error {
+        background-color: #f8d7da;
+        color: #AA0061;
+        border: 1px solid #f5c6cb;
+    }
+
+    .notification strong {
+        margin-right: 5px;
+    }
+
+    .loading-section {
+        text-align: center;
+        align-content: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 50px 0px;
+    }
+</style>
+
+<div class="modal" style="@ModalStyle">
+    <div class="add-store-modal-content">
+
+        <div class="form-top"></div>
+        <div class="modal-header">
+            <p class="upload-memorandum">
+                <span class="upload">Adding </span>
+                <span class="memorandum">Branch</span>
+            </p>
+            @* <span @onclick="CloseModal" class="close">&times;</span> *@
+        </div>
+        @if (SuccessNotif)
+        {
+            <div class="loading-section col-span-2">
+                <div class="spinner-grow" style="width: 3rem; height: 3rem; color: #00A3AD">
+                </div>
+            </div>
+        }
+        else {
+        <div class="modal-body">
+            <div class="form-content" style="padding: 20px;">
+                <div class="col-span-2" style="display: flex; justify-content: space-between; gap: 20px;">
+
+                        <div style="width: 100%">
+                            <label>Chain*</label><br />
+                            <select class="select-input" @oninput="OnChainChanged" @bind="selectedChain">
+                                <option value="">-- Select --</option>
+                                <option value="RDS">RDS</option>
+                                <option value="SM DEPT. STORE">SM DEPT. STORE</option>
+                                <option value="WDS">WDS</option>
+                            </select>
+                        </div>
+
+                        <div style="width: 100%">
+                        <label>Brand*</label><br />
+                            <select class="select-input" @bind="selectedBrand" @oninput="OnBrandChanged" disabled="@(string.IsNullOrEmpty(selectedChain))">
+                                <option value="">-- Select Brand --</option>
+                                @foreach (var brand in allbrandsperchain.Where(a => a.chainCode == selectedChain))
+                                {
+                                    <option value="@brand.brands">@brand.brands</option>
+                                }
+                            </select>
+                    </div>
+
+                    @* <div style="width: 100%">
+                        <label>Store Classification*</label><br />
+                        <select class="select-input" @oninput="OnClassChanged" @bind="selectedClass" disabled="@string.IsNullOrEmpty(selectedBrand)">
+                            <option value="">-- Select --</option>
+                                @foreach (var store in classifications)
+                                {
+                                    <option value="@store.classId">@store.classRep</option>
+                                }
+                        </select>
+                    </div> *@
+                    <div style="width: 100%">
+                        <label>Branch Name*</label><br />
+                        <select class="select-input" @oninput="OnBranchChanged" @bind="selectedBranch" disabled="@(string.IsNullOrEmpty(selectedBrand))">
+                            <option value="" hidden>-- Select --</option>
+                            @foreach (var branch in allStoreClass.Where(a => !tempbranch.Any(t => t.BranchCode == a.branchCode)))
+                            {
+                                <option value="@branch.branchName">@branch.branchName</option>
+                            }
+                        </select>
+                    </div>
+                    <div style="width:fit-content; white-space: nowrap;height: auto; display: flex; flex-direction: column;">
+                            <button style="margin-top: auto" class="submit-button add-button" @onclick="AddingBranch" disabled="@(string.IsNullOrEmpty(selectedBranch))">Add</button>
+                    </div>
+                </div>
+                <br />
+                <div class="grid grid-cols-2">
+                    <div class="col-span-2">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width:10%">Chain</th>
+                                    <th style="width:10%">Brand</th>
+                                    <th style="width:15%">Branch Code</th>
+                                    <th style="width:35%">Branch Name</th>
+                                    <th style="width:10%">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                 @foreach (var branch in tempbranch)
+                                {
+                                    <tr>
+                                        <td>
+                                            @branch.SelectedChain
+                                        </td>
+                                        <td>
+                                            @branch.SelectedBrand
+                                        </td>
+                                        <td>
+                                            @branch.BranchCode
+                                        </td>
+                                        <td>
+                                            @branch.SelectedBranch
+                                        </td>
+                                        <td>
+                                            <button class="delete-button" @onclick="() => RemoveBranch(branch.SelectedBranch)">
+                                                <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" class="ionicon" viewBox="0 0 512 512"><path d="M112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" /><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M80 112h352" /><path d="M192 112V72h0a23.93 23.93 0 0124-24h80a23.93 23.93 0 0124 24h0v40M256 176v224M184 176l8 224M328 176l-8 224" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" /></svg>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <br />
+            </div>
+        </div>
+            <div class="modal-footer">
+                <button @onclick="SaveBranch"
+                        disabled="@(!tempbranch.Any())"
+                        class="submit-button">
+                    Save
+                </button>
+                <button @onclick="CloseModal" class="cancel-button">Cancel</button>
+            </div>
+        }
+    </div>
+</div>
+
+@if (SuccessNotif)
+{
+    <div class="notification success">
+        <strong>Success!</strong><br /> Your operation was completed successfully.
+    </div>
+}
+
+@if (ErrorNotif)
+{
+    <div class="notification error">
+        <strong>Error!</strong><br />Something went wrong. Please try again.
+    </div>
+
+}
+
+@code {
+    private string? selectedChain, selectedBrand, selectedClass, selectedBranch;
+    private bool CanDisplayData { get; set; } = false;
+    private List<StoreClassification> classifications = new List<StoreClassification>();
+    private List<BranchMaintenance> allStoreClass = new List<BranchMaintenance>();
+    private List<tempAdd> tempbranch = new List<tempAdd>();
+    private List<BranchMaintenance> allbrandsperchain = new List<BranchMaintenance>();
+    private DateTime datenow = DateTime.Now;
+    private bool ErrorNotif = false;
+    private bool SuccessNotif = false;
+
+    private async Task<string> GetBranchCode(string selectedChain, string selectedBranch)
+    {
+        try
+        {
+            // Modify the query to also select the BranchCode
+            string getStores = $"SELECT branchCode FROM nbfibranchmaintenance WHERE branchName = @selectedBranch AND chainCode = @selectedChain";
+
+            // Use parameterized queries to prevent SQL injection
+            var parameters = new { selectedBranch, selectedChain };
+            var result = await _data.LoadData<tempAdd, dynamic>(getStores, parameters, Configuration.GetConnectionString("DefaultConnection"));
+
+            // Return the BranchCode from the first result, or null if not found
+            return result.FirstOrDefault()?.BranchCode;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+            return null; // Return null if an error occurs
+        }
+    }
+
+    public async Task AddingBranch()
+    {
+        // Check if all required fields have values
+        if (!string.IsNullOrEmpty(selectedChain) &&
+            !string.IsNullOrEmpty(selectedBrand) &&
+            !string.IsNullOrEmpty(selectedBranch))
+        {
+            // Check if the branch already exists in the tempbranch list
+            bool branchExists = tempbranch.Any(b => b.SelectedBranch == selectedBranch);
+
+            // If the branch does not exist, retrieve the BranchCode
+            if (!branchExists)
+            {
+                string branchCode = await GetBranchCode(selectedChain, selectedBranch);
+                if (!string.IsNullOrEmpty(branchCode))
+                {
+                    // Add the selected values to the tempbranch list
+                    tempbranch.Add(new tempAdd
+                        {
+                            SelectedChain = selectedChain,
+                            SelectedBrand = selectedBrand,
+                            SelectedBranch = selectedBranch,
+                            BranchCode = branchCode // Save the BranchCode
+                        });
+
+                    Console.WriteLine($"Branch {selectedBranch} added with BranchCode {branchCode}.");
+                }
+                else
+                {
+                    Console.WriteLine($"Branch code for {selectedBranch} not found.");
+                }
+            }
+            else
+            {
+                Console.WriteLine($"Branch {selectedBranch} already exists.");
+            }
+
+            // Reset form fields after adding
+        }
+        else
+        {
+            Console.WriteLine("All fields must be filled.");
+        }
+        selectedBranch = "";
+    }
+
+
+    public async Task SaveBranch()
+    {
+        // Call the AddingBranch method to perform the update
+        //await AddingBranch();
+        SuccessNotif = true;
+
+        // Execute the update query for each branch in tempbranch
+        foreach (var branch in tempbranch)
+        {
+            // Validate that all required fields are populated
+            if (string.IsNullOrEmpty(branch.SelectedChain) ||
+                string.IsNullOrEmpty(branch.SelectedBranch) ||
+                string.IsNullOrEmpty(branch.SelectedBrand) ||
+                string.IsNullOrEmpty(branch.BranchCode))
+            {
+                // Log a message or handle the missing data case
+                Console.WriteLine($"Missing required data for branch {branch.SelectedBranch}. Skipping.");
+                continue; // Skip this branch if any required field is missing
+            }
+
+            // Log the parameter values to check correctness
+            Console.WriteLine($"Deleting data for Chain: {branch.SelectedChain}, Branch: {branch.SelectedBranch}, BranchCode: {branch.BranchCode}");
+
+            // Execute the DELETE query using parameters
+            string updateQuery = @"DELETE FROM excluded_brands WHERE chainCode = @SelectedChain AND brands = @SelectedBrand AND branchCode = @BranchCode";
+
+            var parameters = new
+            {
+                SelectedChain = branch.SelectedChain,
+                SelectedBrand = branch.SelectedBrand,
+                SelectedBranch = branch.SelectedBranch,
+                BranchCode = branch.BranchCode
+            };
+
+            try
+            {
+                // Execute the DELETE query
+                await _data.LoadData<dynamic, dynamic>(updateQuery, parameters, Configuration.GetConnectionString("DefaultConnection"));
+                Console.WriteLine($"Successfully deleted branch {branch.SelectedBranch}.");
+
+                // Prepare and execute the log SQL
+                string logsSql = $@"INSERT INTO nbfi_store_logs (chain, category, branchClass, branchCode, branchName, classFrom, classTo, updated_By, updated_Date)
+                            VALUES ('{branch.SelectedChain}', '{branch.SelectedBrand}', '{branch.SelectedBrand.ToLower()}classification', '{branch.BranchCode}', '{branch.BranchName}', 'multiple update', '{branch.SelectedClass}', 'multiple', '{datenow}')";
+                await _data.SaveData(logsSql, new { }, Configuration.GetConnectionString("DefaultConnection"));
+
+                Console.WriteLine($"Logged update for branch {branch.SelectedBranch}.");
+            }
+            catch (Exception ex)
+            {
+                // Log any exceptions that occur during the execution
+                Console.WriteLine($"Error occurred while deleting/updating branch {branch.SelectedBranch}: {ex.Message}");
+            }
+        }
+
+        // Clear the temporary branch list after saving
+        tempbranch.Clear();
+
+        await Task.Delay(2000);
+        SuccessNotif = false;
+        // Optionally close the modal after saving
+        StateHasChanged();
+        Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+        CloseModal();
+    }
+
+    private async Task RemoveBranch(string branchName)
+    {
+        var branchToRemove = tempbranch.FirstOrDefault(b => b.SelectedBranch == branchName);
+        if (branchToRemove != null)
+        {
+            tempbranch.Remove(branchToRemove);
+            Console.WriteLine($"Branch {branchName} removed.");
+        }
+        await CheckAndDisplayData();
+    }
+    public async Task GetBranches()
+    {
+        try
+        {
+            string getall = $@"SELECT a.branchName, a.branchCode FROM excluded_brands a
+                                JOIN nbfibranchmaintenance b ON b.branchCode = a.branchCode
+                                WHERE a.chainCode = '{selectedChain}' and a.brands = '{selectedBrand}'
+                                AND b.status = 'Active'";
+            allStoreClass = await _data.LoadData<BranchMaintenance, dynamic>(getall, new { }, Configuration.GetConnectionString("DefaultConnection"));
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+
+    private Task ResetForm()
+    {
+        selectedChain = "";
+        selectedBrand = "";
+        selectedClass = "";
+        selectedBranch = "";
+
+        // Reset dropdowns and other UI controls by forcing a re-render
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private async Task OnBrandChanged(ChangeEventArgs e)
+    {
+        selectedBrand = e.Value.ToString();
+        Console.WriteLine($"selectedBrand: {selectedBrand}");
+        await GetBranches();
+        await CheckAndDisplayData();
+        StateHasChanged();
+    }
+
+    private async Task OnChainChanged(ChangeEventArgs e)
+    {
+        selectedChain = e.Value.ToString();
+        Console.WriteLine($"selectedChain: {selectedChain}");
+        selectedBrand = "";
+        await GetBrands();
+        await CheckAndDisplayData();
+    }
+
+    private async Task GetBrands()
+    {
+        try
+        {
+            string getall = $@"SELECT * FROM nbfibrandsandbranch";
+            allbrandsperchain = await _data.LoadData<BranchMaintenance, dynamic>(getall, new { }, Configuration.GetConnectionString("DefaultConnection"));
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+
+    private async Task OnBranchChanged(ChangeEventArgs e)
+    {
+        if (e.Value != null)
+        {
+            selectedBranch = e.Value.ToString();
+            Console.WriteLine($"selectedBranch: {selectedBranch}");
+            await CheckAndDisplayData();
+        }
+    }
+
+    private async Task CheckAndDisplayData()
+    {
+        // Check if all the selections are valid
+        if (!string.IsNullOrEmpty(selectedChain) &&
+            !string.IsNullOrEmpty(selectedBrand) &&
+            !string.IsNullOrEmpty(selectedClass) &&
+            !string.IsNullOrEmpty(selectedBranch))
+        {
+            CanDisplayData = true;
+            // await GetAllStoreClass();
+            StateHasChanged();
+        }
+        else
+        {
+            CanDisplayData = false;
+        }
+
+        // Force UI to update
+        StateHasChanged();
+    }
+
+    [Parameter]
+    public string ModalTitle { get; set; }
+
+    [Parameter]
+    public RenderFragment ModalBody { get; set; }
+
+    private string ModalStyle => ShowModal ? "display: block;" : "display: none;";
+
+    private bool ShowModal { get; set; }
+
+    public void OpenModal()
+    {
+        ShowModal = true;
+    }
+
+    public async void CloseModal()
+    {
+        tempbranch.Clear();
+        ShowModal = false;
+        await ResetForm();
+        CheckAndDisplayData();
+        StateHasChanged();
+    }
+}

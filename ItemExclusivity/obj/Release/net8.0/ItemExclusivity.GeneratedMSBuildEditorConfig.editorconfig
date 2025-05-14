@@ -1,0 +1,157 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = ItemExclusivity
+build_property.RootNamespace = ItemExclusivity
+build_property.ProjectDir = Z:\ItemExclusivity v2\ItemExclusivity v2\ItemExclusivity\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = Z:\ItemExclusivity v2\ItemExclusivity v2\ItemExclusivity
+build_property._RazorSourceGeneratorDebug = 
+build_property.EffectiveAnalysisLevelStyle = 8.0
+build_property.EnableCodeStyleSeverity = 
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/App.razor]
+build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/Pages/EPC/AddItemModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRVBDXEFkZEl0ZW1Nb2RhbC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/Pages/EPC/ConfirmMassModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRVBDXENvbmZpcm1NYXNzTW9kYWwucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/Pages/EPC/ConfirmModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRVBDXENvbmZpcm1Nb2RhbC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/Pages/EPC/ConfirmSelectedModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRVBDXENvbmZpcm1TZWxlY3RlZE1vZGFsLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/Pages/EPC/Index.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRVBDXEluZGV4LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/Pages/EPC/ItemExclusivityMaintenance.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRVBDXEl0ZW1FeGNsdXNpdml0eU1haW50ZW5hbmNlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/Pages/EPC/MassRemoveItemModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRVBDXE1hc3NSZW1vdmVJdGVtTW9kYWwucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/Pages/EPC/MassRemoveStoreModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRVBDXE1hc3NSZW1vdmVTdG9yZU1vZGFsLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/Pages/EPC/MoveModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRVBDXE1vdmVNb2RhbC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/Pages/EPC/RemoveItemGroup.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRVBDXFJlbW92ZUl0ZW1Hcm91cC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/Pages/EPC/RemoveModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRVBDXFJlbW92ZU1vZGFsLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/Pages/EPC/StoreClassMaintenance.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRVBDXFN0b3JlQ2xhc3NNYWludGVuYW5jZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/Pages/Index.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXgucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/Pages/NBFI/AddItemModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTkJGSVxBZGRJdGVtTW9kYWwucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/Pages/NBFI/ConfirmModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTkJGSVxDb25maXJtTW9kYWwucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/Pages/NBFI/ConfirmSelectedModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTkJGSVxDb25maXJtU2VsZWN0ZWRNb2RhbC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/Pages/NBFI/Index.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTkJGSVxJbmRleC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/Pages/NBFI/ItemExclusivityMaintenance.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTkJGSVxJdGVtRXhjbHVzaXZpdHlNYWludGVuYW5jZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/Pages/NBFI/MassRemoveItemModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTkJGSVxNYXNzUmVtb3ZlSXRlbU1vZGFsLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/Pages/NBFI/MassRemoveStoreModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTkJGSVxNYXNzUmVtb3ZlU3RvcmVNb2RhbC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/Pages/NBFI/Modal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTkJGSVxNb2RhbC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/Pages/NBFI/MoveModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTkJGSVxNb3ZlTW9kYWwucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/Pages/NBFI/RemoveModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTkJGSVxSZW1vdmVNb2RhbC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/Pages/NBFI/StoreClassificationMaintenance.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTkJGSVxTdG9yZUNsYXNzaWZpY2F0aW9uTWFpbnRlbmFuY2UucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/Shared/SurveyPrompt.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXFN1cnZleVByb21wdC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/Pages/EPC/Modal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRVBDXE1vZGFsLnJhem9y
+build_metadata.AdditionalFiles.CssScope = b-3dw2411y94
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/Pages/ExMaintenance.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRXhNYWludGVuYW5jZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-gseiuv6cv3
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/Shared/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXE1haW5MYXlvdXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-vtekiw3rqu
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/Shared/NavMenu.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXE5hdk1lbnUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-9hct8wil9l
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/Pages/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRXJyb3IuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/Pages/_Host.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX0hvc3QuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/Pages/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX0xheW91dC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 

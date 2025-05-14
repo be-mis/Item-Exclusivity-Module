@@ -1,0 +1,17 @@
+﻿@page "/"
+@namespace ItemExclusivity.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_Layout";
+}
+
+<link href="css/site.css" rel="stylesheet" />
+
+<script>
+    window.TriggerFileInput = function (elementId) {
+        document.getElementById(elementId).click();
+    }
+</script>
+
+
+<component type="typeof(App)" render-mode="ServerPrerendered" />

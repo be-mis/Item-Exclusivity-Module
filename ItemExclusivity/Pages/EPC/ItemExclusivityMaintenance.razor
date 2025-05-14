@@ -1,0 +1,1421 @@
+@page "/epc/itemexclusivitymaintenance"
+
+@using ItemExclusivity.Data
+@using ItemExclusivity.Models
+@using Microsoft.AspNetCore.Mvc
+@using NPOI.HSSF.UserModel
+@using NPOI.SS.UserModel;
+@using System.IO;
+@using System.Net.Http.Headers;
+@using NPOI.XSSF.UserModel
+@using ItemExclusivity.Pages.EPC
+
+@inject IJSRuntime IJSRuntime
+@inject IConfiguration Configuration
+@inject NavigationManager NavigationManager
+@inject IMyDataConnection _data
+
+@* <script>
+    window.downloadFileFromStream = async (fileName, contentStreamReference) => {
+        const arrayBuffer = await contentStreamReference.arrayBuffer();
+        const blob = new Blob([arrayBuffer]);
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement('a');
+        anchor.href = url;
+        anchor.download = fileName;
+        anchor.click();
+        URL.revokeObjectURL(url);
+    };
+</script> *@
+
+<style>
+    table {
+        width: 100%;
+    }
+
+    tr td {
+        font-size: 14px;
+    }
+
+        tr td a {
+            text-decoration: none
+        }
+
+            tr td a:hover {
+                color: #00A3AD;
+                font-weight: bold;
+            }
+
+    thead tr th {
+        padding: 4px 6px;
+    }
+
+    thead tr:hover {
+        background-color: white !important;
+    }
+
+    tbody tr td {
+        padding: 4px 6px;
+        border-top: 1px solid #ccc;
+        border-bottom: 1px solid #ccc;
+    }
+
+    tbody tr:hover {
+        background-color: #f8d7da;
+        color: black;
+        font-weight: bold;
+    }
+
+    td button {
+        border: none;
+        background-color: transparent;
+    }
+
+        td button:hover {
+            text-decoration: underline;
+            font-weight: bold;
+        }
+
+
+    .submit-button {
+        border-radius: 2px;
+    }
+
+    .label-button {
+        color: #00A3AD !important;
+        cursor: pointer;
+        border-radius: 2px;
+    }
+
+        .label-button:hover {
+            color: white !important;
+        }
+
+    .remove-button {
+        border: 1px solid #AA0061;
+        background-color: white;
+        padding: 2px 6px;
+        color: #AA0061;
+    }
+
+        .remove-button:hover {
+            color: #FFFFFF;
+            background-color: #AA0061;
+            border: 1px solid #AA0061;
+        }
+
+    .submit-button {
+        border-radius: 2px;
+    }
+
+    .label-button {
+        color: #00A3AD !important;
+        cursor: pointer;
+        border-radius: 2px;
+    }
+
+        .label-button:hover {
+            color: white !important;
+        }
+
+    .clear-button {
+        margin-top: auto;
+        width: fit-content;
+        border: 2px solid #4B5563;
+        background-color: #4B5563;
+        padding: 1px 16px;
+        color: white;
+        border-radius: 2px;
+    }
+
+        .clear-button:hover {
+            background-color: white;
+            color: #4B5563;
+        }
+
+    .remove-selected-button {
+        border: 2px solid #AA0061;
+        background-color: white;
+        padding: 2px 12px;
+        color: #AA0061;
+        border-radius: 2px;
+    }
+
+        .remove-selected-button:hover {
+            color: white;
+            background-color: #AA0061;
+        }
+
+    
+    .pagination-number {
+        border-radius: 2px;
+        width: 30px;
+        height: 30px;
+        margin: 0px 10px;
+        border: 1px solid #00A3AD;
+        color: #00A3AD;
+        background-color: none;
+    }
+
+    .pagination-next {
+        background-color: #fff;
+        border: none;
+    }
+
+        .pagination-next .icon-next {
+            height: 25px;
+            width: 20px;
+        }
+
+    .pagination-prev {
+        background-color: #fff;
+        border: none;
+    }
+
+        .pagination-prev .icon-prev {
+            height: 25px;
+            width: 20px;
+        }
+
+    .select-size {
+        color: #00A3AD;
+        margin-right: 10px;
+        border: 1px solid #00A3AD;
+    }
+
+    button.active {
+        background-color: #00A3AD;
+        color: #ffffff;
+    }
+</style>
+
+<PageTitle>Store Classification</PageTitle>
+
+<div class="container">
+    <div class="form-top"></div>
+    <div class="form-content" style="padding: 20px;">
+        <div class="grid grid-cols-2">
+            <div class="col-span-1">
+                <p class="upload-memorandum">
+                    <span class="upload">Item Exclusivity</span>
+                    <span class="memorandum">Maintenance</span>
+                </p>
+            </div>
+            <div class="col-span-1">
+                <button class="submit-button" @onclick="OpenModal">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" height="20" width="20" viewBox="0 0 512 512"><path d="M448 256c0-106-86-192-192-192S64 150 64 256s86 192 192 192 192-86 192-192z" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="32" /><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M256 176v160M336 256H176" /></svg>
+                    Add Item
+                </button>
+
+                <InputFile OnChange="@HandleFileChangeSol" accept=".xls,.xlsx" multiple="false" name="file" id="file" hidden />
+                <label class="submit-button label-button" style="padding: 4px 20px 3px 20px;" for="file">
+                    <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 1.25C12.2189 1.25 12.427 1.34567 12.5694 1.51191L15.5694 5.01191C15.839 5.3264 15.8026 5.79988 15.4881 6.06944C15.1736 6.33901 14.7001 6.30259 14.4306 5.98809L12.75 4.02744L12.75 15C12.75 15.4142 12.4142 15.75 12 15.75C11.5858 15.75 11.25 15.4142 11.25 15L11.25 4.02744L9.56944 5.98809C9.29988 6.30259 8.8264 6.33901 8.51191 6.06944C8.19741 5.79988 8.16099 5.3264 8.43056 5.01191L11.4306 1.51191C11.573 1.34567 11.7811 1.25 12 1.25ZM6.99583 8.25196C7.41003 8.24966 7.74768 8.58357 7.74999 8.99778C7.7523 9.41198 7.41838 9.74963 7.00418 9.75194C5.91068 9.75803 5.1356 9.78642 4.54735 9.89448C3.98054 9.99859 3.65246 10.1658 3.40901 10.4092C3.13225 10.686 2.9518 11.0746 2.85315 11.8083C2.75159 12.5637 2.75 13.5648 2.75 15.0002V16.0002C2.75 17.4356 2.75159 18.4367 2.85315 19.1921C2.9518 19.9259 3.13225 20.3144 3.40901 20.5912C3.68577 20.868 4.07434 21.0484 4.80812 21.1471C5.56347 21.2486 6.56458 21.2502 8 21.2502H16C17.4354 21.2502 18.4365 21.2486 19.1919 21.1471C19.9257 21.0484 20.3142 20.868 20.591 20.5912C20.8678 20.3144 21.0482 19.9259 21.1469 19.1921C21.2484 18.4367 21.25 17.4356 21.25 16.0002V15.0002C21.25 13.5648 21.2484 12.5637 21.1469 11.8083C21.0482 11.0746 20.8678 10.686 20.591 10.4092C20.3475 10.1658 20.0195 9.99859 19.4527 9.89448C18.8644 9.78642 18.0893 9.75803 16.9958 9.75194C16.5816 9.74963 16.2477 9.41198 16.25 8.99778C16.2523 8.58357 16.59 8.24966 17.0042 8.25196C18.0857 8.25798 18.9871 8.28387 19.7236 8.41916C20.4816 8.55839 21.1267 8.82363 21.6517 9.34856C22.2536 9.95048 22.5125 10.7084 22.6335 11.6085C22.75 12.4754 22.75 13.5778 22.75 14.9453V16.0551C22.75 17.4227 22.75 18.525 22.6335 19.392C22.5125 20.2921 22.2536 21.0499 21.6517 21.6519C21.0497 22.2538 20.2919 22.5127 19.3918 22.6337C18.5248 22.7503 17.4225 22.7502 16.0549 22.7502H7.94513C6.57754 22.7502 5.47522 22.7503 4.60825 22.6337C3.70814 22.5127 2.95027 22.2538 2.34835 21.6519C1.74643 21.0499 1.48754 20.2921 1.36652 19.392C1.24996 18.525 1.24998 17.4227 1.25 16.0551V14.9453C1.24998 13.5777 1.24996 12.4754 1.36652 11.6085C1.48754 10.7084 1.74643 9.95048 2.34835 9.34856C2.87328 8.82363 3.51835 8.55839 4.27635 8.41916C5.01291 8.28386 5.9143 8.25798 6.99583 8.25196Z" />
+                    </svg>
+                    Upload
+                </label>
+
+                <button class="submit-button" @onclick="Template">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="none" d="M8 17.5V15.5C8 14.6716 8.67157 14 9.5 14H14.5C15.3284 14 16 14.6716 16 15.5V17.5C16 18.3284 15.3284 19 14.5 19H9.5C8.67157 19 8 18.3284 8 17.5Z" stroke-width="1.5" stroke-linecap="round" />
+                        <path fill="currentcolor" stroke="none" d="M8 15.75V17.5C8 17.5852 8.0071 17.6687 8.02074 17.75H6.25C4.86929 17.75 3.75 16.6307 3.75 15.25V10.25C3.75 8.86929 4.86929 7.75 6.25 7.75H17.25C18.6307 7.75 19.75 8.86929 19.75 10.25V15.25C19.75 16.6307 18.6307 17.75 17.25 17.75H15.9793C15.9929 17.6687 16 17.5852 16 17.5V15.75H17.25C17.5261 15.75 17.75 15.5261 17.75 15.25V10.25C17.75 9.97386 17.5261 9.75 17.25 9.75H6.25C5.97386 9.75 5.75 9.97386 5.75 10.25V15.25C5.75 15.5261 5.97386 15.75 6.25 15.75H8ZM10.25 5.25C10.25 4.97386 10.4739 4.75 10.75 4.75H13.25C13.5261 4.75 13.75 4.97386 13.75 5.25V5.75C13.75 6.30228 14.1977 6.75 14.75 6.75C15.3023 6.75 15.75 6.30228 15.75 5.75V5.25C15.75 3.86929 14.6307 2.75 13.25 2.75H10.75C9.36929 2.75 8.25 3.86929 8.25 5.25V5.75C8.25 6.30228 8.69772 6.75 9.25 6.75C9.80228 6.75 10.25 6.30228 10.25 5.75V5.25Z" />
+                    </svg>
+                    Template
+                </button>
+            </div>
+            <br />
+            <div class="col-span-2" style="display: flex; justify-content: space-between; gap: 20px;">
+                <!-- CHAIN -->
+                <div style="width: 100%">
+                    <label>Chain*</label><br />
+                    <select class="select-input" @onchange="OnChainChanged" disabled="@(!string.IsNullOrEmpty(selectedChain) || isLoading)">
+                        <option value="">-- Select Chain --</option>
+                        <option value="1">Variuos Chain</option>
+                        <option value="2">SM HOMEWORLD</option>
+                        <option value="3">OUR HOME</option>
+                    </select>
+                </div>
+                <!-- CATEGORY -->
+                <div style="width: 100%">
+                    <label>Category*</label><br />
+                    <select class="select-input" @onchange="OnCategoryChanged" disabled="@(!string.IsNullOrEmpty(selectedCategory) || string.IsNullOrEmpty(selectedChain))">
+                        <option value="">-- Select Category --</option>
+                        <option value="LAMPS">LAMPS</option>
+                        <option value="DECOR">DECOR</option>
+                        <option value="FRAMES">FRAMES</option>
+                        @if (selectedChain != "2")
+                        {
+                            <option value="CLOCKS">CLOCKS</option>
+                        }
+                        @if (selectedChain == "1")
+                        {
+                            <option value="STATIONERY">STATIONERY</option>
+                        }
+                    </select>
+                </div>
+                <!-- Store Classification -->
+                <div style="width: 100%">
+                    <label>Store Classification*</label><br />
+                    <select class="select-input" @onchange="OnStoreClassificationChanged" disabled="@(!string.IsNullOrEmpty(selectedStoreClassification) || string.IsNullOrEmpty(selectedCategory))">
+                        <option value="">-- ALL --</option>
+                        <option value="1">A STORES – EXTRA HIGH</option>
+                        <option value="2">B STORES – HIGH</option>
+                        <option value="3">C STORES - MEDIUM</option>
+                        <option value="4">D STORES - SMALL</option>
+                        <option value="5">E STORES - EXTRA SMALL</option>
+                    </select>
+                </div>
+                <div style="width:fit-content; white-space: nowrap;height: auto; display: flex; flex-direction: column;">
+                    <button class="clear-button" @onclick="ClearDropDown">
+                        Clear Filter
+                    </button>
+                </div>
+            </div>
+        </div>
+        @if (CanDisplayData)
+        {
+            <br />
+            <div style="display:flex;justify-content:space-between;" class="col-span-2">
+                <div class="col-span-1" style="width: 30%">
+                    <input style="width:100%" id="search_input" name="search_input" type="text" placeholder="Search..." @bind="searchTerm" @oninput="FilterRecords" />
+                </div>
+                <div>
+                    @if (checkedItems.Count == 0)
+                    {
+                        <button class="remove-selected-button">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" class="ionicon" viewBox="0 0 512 512"><path d="M112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" /><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M80 112h352" /><path d="M192 112V72h0a23.93 23.93 0 0124-24h80a23.93 23.93 0 0124 24h0v40M256 176v224M184 176l8 224M328 176l-8 224" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" /></svg> Remove All
+                        </button>
+                    }
+                    else
+                    {
+                        <button class="remove-selected-button" @onclick="ConfirmBeforeRemoving">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" class="ionicon" viewBox="0 0 512 512"><path d="M112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" /><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M80 112h352" /><path d="M192 112V72h0a23.93 23.93 0 0124-24h80a23.93 23.93 0 0124 24h0v40M256 176v224M184 176l8 224M328 176l-8 224" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" /></svg> Remove Selected
+                        </button>
+
+                    }
+                </div>
+            </div>
+            <br />
+            <div class="col-span-2">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:5%;">
+                            </th>
+                            <th style="width:20%;">Item Code</th>
+                            <th style="width:30%;">Description</th>
+                            <th style="width:10%;">Size</th>
+                            <th style="width:10%;">Color</th>
+                            <th style="width:10%;">Brand</th>
+                            <th style="width:15%;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (paginatedItems != null && paginatedItems.Any())
+                        {
+                            @foreach (var listOfItem in paginatedItems.Select((item, idx) => new { item, idx }))
+                            {
+                                <tr>
+                                    @* <td>@listOfItem.item.Id</td> *@
+                                    <td>
+                                        <input type="checkbox"
+                                               value="@listOfItem.item.Id"
+                                               checked="@itemCheckbox[listOfItem.item.Id - 1]"
+                                               @onchange="e => ToggleChecked(listOfItem.item.itemNo, (bool)e.Value, listOfItem.item.Id - 1)" />
+                                    </td>
+                                    <td>
+                                        @if (childVisible[listOfItem.item.Id - 1]) // Use the index here
+                                        {
+                                            <button class="button-hide-child" @onclick="() => ShowChilds(listOfItem.item.itemNo)">
+                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                     width="24"
+                                                     height="24"
+                                                     viewBox="0 0 24 24"
+                                                     fill="currentColor">
+                                                    <path d="M12 16.172l-4.95-4.95a.996.996 0 1 1 1.414-1.414L12 13.344l3.536-3.536a.996.996 0 1 1 1.414 1.414l-4.95 4.95z" />
+                                                </svg>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button class="button-show-child" @onclick="() => ShowChilds(listOfItem.item.itemNo)">
+                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                     width="24"
+                                                     height="24"
+                                                     viewBox="0 0 24 24"
+                                                     fill="currentColor">
+                                                    <path d="M13.172 12L9.344 8.172a.996.996 0 011.414-1.414l5.656 5.656-5.656 5.656a.996.996 0 01-1.414-1.414L13.172 12z" />
+                                                </svg>
+                                            </button>
+                                        }
+                                        @listOfItem.item.itemNo
+                                        @* <p hidden>@(selectedItemNo = listOfItem.item.itemNo)</p> *@
+                                    </td>
+                                    <td>@listOfItem.item.itemDescription</td>
+                                    <td>@listOfItem.item.Size</td>
+                                    <td>@listOfItem.item.ChildColor</td>
+                                    <td>@listOfItem.item.brandNames</td>
+                                    <td>
+                                        <button class="remove-button" @onclick="() => ShowDeleteModal(listOfItem.item.itemNo)">
+                                            <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" class="ionicon" viewBox="0 0 512 512"><path d="M112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" /><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M80 112h352" /><path d="M192 112V72h0a23.93 23.93 0 0124-24h80a23.93 23.93 0 0124 24h0v40M256 176v224M184 176l8 224M328 176l-8 224" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" /></svg>
+                                        </button>
+                                    </td>
+                                </tr>
+                                @if (childVisible[listOfItem.item.Id - 1])
+                                {
+                                    var uniqueChains = new HashSet<string?>
+                        {
+                        selectedChain switch
+                        {
+                        "1" => listOfItem.item.vChainA,
+                        "2" => listOfItem.item.smA,
+                        "3" => listOfItem.item.oHomeA,
+                        _ => null
+                        },
+                        selectedChain switch
+                        {
+                        "1" => listOfItem.item.vChainB,
+                        "2" => listOfItem.item.smB,
+                        "3" => listOfItem.item.oHomeB,
+                        _ => null
+                        },
+                        selectedChain switch
+                        {
+                        "1" => listOfItem.item.vChainC,
+                        "2" => listOfItem.item.smC,
+                        "3" => listOfItem.item.oHomeC,
+                        _ => null
+                        },
+                        selectedChain switch
+                        {
+                        "1" => listOfItem.item.vChainD,
+                        "2" => listOfItem.item.smD,
+                        "3" => listOfItem.item.oHomeD,
+                        _ => null
+                        },
+                        selectedChain switch
+                        {
+                        "1" => listOfItem.item.vChainE,
+                        "2" => listOfItem.item.smE,
+                        "3" => listOfItem.item.oHomeE,
+                        _ => null
+                        }
+                        };
+
+                                    <tr>
+                                        <td colspan="7">
+                                            <table style="background-color: white;">
+                                                <thead>
+                                                    <tr>
+                                                        <th width="5%"></th>
+                                                        <th width="1%"></th>
+                                                        <th width="20%">Store Classification</th>
+                                                        <th width="20%">Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var chain in uniqueChains
+                                                   .Where(c => !string.IsNullOrEmpty(c) && c != "0")
+                                                   .OrderBy(c => c)) // Ensures non-null and non-empty values only
+                                                    {
+                                                        var classification = chain switch
+                                                        {
+                                                            "1" => "A STORES – EXTRA HIGH",
+                                                            "2" => "B STORES – HIGH",
+                                                            "3" => "C STORES - MEDIUM",
+                                                            "4" => "D STORES - SMALL",
+                                                            "5" => "E STORES - EXTRA SMALL",
+                                                            _ => null
+                                                        };
+                                                        <tr>
+                                                            <td></td>
+                                                            <td><input type="checkbox" @onchange="e => ToggleCheckedClass(listOfItem.item.itemNo, chain,(bool)e.Value)" /></td>
+                                                            <td>@classification</td>
+                                                            <td>
+                                                                <button class="remove-button" @onclick="() => RemoveChain(chain, listOfItem.item.itemNo)">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" class="ionicon" viewBox="0 0 512 512"><path d="M112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" /><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M80 112h352" /><path d="M192 112V72h0a23.93 23.93 0 0124-24h80a23.93 23.93 0 0124 24h0v40M256 176v224M184 176l8 224M328 176l-8 224" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" /></svg>
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                }
+
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+            <br />
+            <div class="col-span-2">
+                <div class="pagination">
+                    <select class="select-size" @bind="pageSize" @oninput="PageSizeChanged">
+
+                        <option value="5">5</option>
+                        <option value="10" selected>10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                    @if (currentPage <= 1)
+                    {
+                        <button class="pagination-prev" @onclick="() => ChangePage(currentPage - 1)" disabled>
+                            <svg class="icon-prev" viewBox="0 0 64 74" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M7.35169 27.7144L45.1028 3.73919C52.4262 -0.911806 62 4.34935 62 13.0248L62 60.9752C62 69.6507 52.4262 74.9118 45.1028 70.2608L7.35171 46.2857C0.547947 41.9647 0.547935 32.0353 7.35169 27.7144Z" stroke="#00A3AD" fill="#00A3AD" stroke-width="4" />
+                            </svg>
+                        </button>
+                    }
+                    else
+                    {
+                        <button class="pagination-prev" @onclick="() => ChangePage(currentPage - 1)">
+                            <svg class="icon-prev" viewBox="0 0 64 74" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M7.35169 27.7144L45.1028 3.73919C52.4262 -0.911806 62 4.34935 62 13.0248L62 60.9752C62 69.6507 52.4262 74.9118 45.1028 70.2608L7.35171 46.2857C0.547947 41.9647 0.547935 32.0353 7.35169 27.7144Z" stroke="#00A3AD" stroke-width="4" />
+                            </svg>
+                        </button>
+                    }
+                    @* <label>Page @currentPage of @totalPages</label> *@
+                    @foreach (int i in GetPagesToDisplay(totalPages, currentPage))
+                    {
+                        if (i == -1)
+                        {
+                            <span style="width: 30px; height: 30px; margin-left: 10px;">...</span>
+                        }
+                        else
+                        {
+                            <button @onclick="() => SelectPage(i)" class="@(i == currentPage ? "active" : "") pagination-number ">
+                                @i
+                            </button>
+                        }
+                    }
+                    @if (currentPage >= totalPages)
+                    {
+                        <button class="pagination-next" @onclick="() => ChangePage(currentPage + 1)" disabled>
+                            <svg class="icon-next" viewBox="0 0 64 74" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M56.6483 46.2857L18.8972 70.2608C11.5738 74.9118 2 69.6507 2 60.9752L2 13.0248C2 4.34935 11.5738 -0.911817 18.8972 3.73917L56.6483 27.7143C63.452 32.0353 63.4521 41.9647 56.6483 46.2857Z" stroke="#00A3AD" fill="#00A3AD" stroke-width="4" />
+                            </svg>
+                        </button>
+                    }
+                    else
+                    {
+                        <button class="pagination-next" @onclick="() => ChangePage(currentPage + 1)">
+                            <svg class="icon-next" viewBox="0 0 64 74" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M56.6483 46.2857L18.8972 70.2608C11.5738 74.9118 2 69.6507 2 60.9752L2 13.0248C2 4.34935 11.5738 -0.911817 18.8972 3.73917L56.6483 27.7143C63.452 32.0353 63.4521 41.9647 56.6483 46.2857Z" stroke="#00A3AD" stroke-width="4" />
+                            </svg>
+                        </button>
+                    }
+                </div>
+            </div>
+            @* <div class="accordion">
+
+                @foreach (var pair in checkedClassification)
+                {
+                    <p>Item: @pair.Item1, Class: @pair.Item2</p>
+                }
+            </div> *@
+        }
+    </div>
+</div>
+
+<AddItemModal @ref="modal" ModalTitle="Add Branch" ModalBody="@ModalBodyContent"></AddItemModal>
+
+<ConfirmModal @ref="ConfirmationModal" storeCodeToDelete="@storeCodeToDelete" OnConfirm="HandleConfirm" OnCancel="HandleCancel" ModalBody="@ModalBodyContent"></ConfirmModal>
+
+<ConfirmSelectedModal @ref="ConfirmationSelectedModal" ModalTitle="Remove Selected item" ModalBody="@ModalBodyContent"></ConfirmSelectedModal>
+
+<MassRemoveItemModal @ref="ConfirmMassRemoveModal" ModalTitle="Mass Remove Selected item" OnConfirm="HandleMassConfirm" ModalBody="@ModalBodyContent"></MassRemoveItemModal>
+
+<RemoveItemGroup @ref="RemoveItemGroupModal" ModalTitle="Remove Selected item" ModalBody="@ModalBodyContent"></RemoveItemGroup>
+
+@code {
+    private bool[] childVisible;
+    private bool isLoading = false, isModalVisible = false, connectionSuccessful;
+    private bool CanDisplayData { get; set; } = false;
+    private bool categoriesEnabled { get; set; } = false;
+    private bool storeClassificationsEnabled { get; set; } = false;
+    private bool[] itemCheckbox;
+
+    private string? selectedStoreClassification, selectedType, selectedItemNo, sheetChain, sheetCategory, sheetClassification, sheetItemDescription, sheetItemNo, sheetItemClassfication;
+    private string? storeCodeToDelete, errorMessage;
+    private string removeStoreName { get; set; }
+    private string selectedChain { get; set; }
+    private string selectedCategory { get; set; }
+    private int removeStoreID { get; set; }
+
+    private DateTime datenow = DateTime.Now;
+
+    List<SheetData> sheetDataList = new List<SheetData>();
+    private List<ItemMaintenance> itemMaintenances = new List<ItemMaintenance>();
+    private List<BranchMaintenance> branchMaintenances = new List<BranchMaintenance>();
+    private List<string> checkedItems = new List<string>();
+    private List<Tuple<string, string>> checkedClassification = new List<Tuple<string, string>>();
+    private HashSet<string> removedChains = new HashSet<string>();
+
+    private AddItemModal modal;
+    private ConfirmModal ConfirmationModal;
+    private ConfirmSelectedModal ConfirmationSelectedModal;
+    private MassRemoveItemModal ConfirmMassRemoveModal;
+    private RemoveItemGroup RemoveItemGroupModal;
+
+    private List<ItemMaintenance> filteredItemsTemp = null;
+    private List<ItemMaintenance>? filteredItems = new List<ItemMaintenance>();
+    private List<ItemMaintenance>? paginatedItems = new List<ItemMaintenance>();
+    private string? searchTerm;
+    private int currentPage = 1;
+    private int totalPages;
+    private int pageSize = 10;
+
+
+
+    private async Task ClearDropDown()
+    {
+        await IJSRuntime.InvokeVoidAsync("window.location.reload");
+    }
+
+    private void ToggleCheckedClass(string item, string checkedClass, bool isChecked)
+    {
+        var pair = new Tuple<string, string>(item, checkedClass);
+        if (isChecked)
+        {
+            checkedClassification.Add(pair);
+        }
+        else
+        {
+            checkedClassification.Remove(pair);
+        }
+    }
+
+    private void ToggleChecked(string item, bool isChecked, int id)
+    {
+        itemCheckbox[id] = !itemCheckbox[id];
+        if (isChecked)
+        {
+            checkedItems.Add(item);
+        }
+        else
+        {
+            checkedItems.Remove(item);
+        }
+    }
+
+    private async Task ConfirmBeforeRemoving()
+    {
+        ConfirmMassRemoveModal.OpenModal();
+    }
+
+    private async Task RemoveAllChecked()
+    {
+        string chain = selectedChain switch
+        { "1" => "vChain", "2" => "sm", "3" => "oHome" };
+
+        string? chainletter = selectedStoreClassification switch
+        { "1" => "A", "2" => "B", "3" => "C", "4" => "D", "5" => "E", _ => null };
+
+        string checkedSQL = "";
+        if (!string.IsNullOrEmpty(selectedStoreClassification))
+        {
+            foreach (var index in checkedItems.OrderByDescending(i => i))
+            {
+                checkedSQL = $@"UPDATE epc_item_exclusive
+                                    SET {chain}{chainletter} = '0'
+                                    WHERE itemNo = '{index}'";
+                Console.WriteLine($"Checked SQL: {checkedSQL}");
+                await _data.SaveData(checkedSQL, new { }, Configuration.GetConnectionString("DefaultConnection"));
+            }
+        }
+        else
+        {
+            foreach (var index in checkedItems.OrderByDescending(i => i))
+            {
+                checkedSQL = $@"UPDATE epc_item_exclusive
+                                    SET {chain}A = '0', {chain}B = '0',{chain}C = '0',{chain}D = '0',{chain}E = '0'
+                                    WHERE itemNo = '{index}'";
+                Console.WriteLine($"Checked SQL: {checkedSQL}");
+                await _data.SaveData(checkedSQL, new { }, Configuration.GetConnectionString("DefaultConnection"));
+            }
+        }
+        Console.WriteLine($"Checked SQL: {checkedSQL}");
+        CheckAndDisplayData();
+        checkedItems.Clear(); // Clear checked items after removal
+        StateHasChanged(); // Refresh UI
+    }
+
+    private async Task RemoveAllClassChecked()
+    {
+        string checkedSQL = "";
+        string chain = selectedChain switch
+        {
+            "1" => "vChain",
+            "2" => "sm",
+            "3" => "oHome"
+        };
+        string? chainletter = selectedStoreClassification switch
+        {
+            "1" => "A",
+            "2" => "B",
+            "3" => "C",
+            "4" => "D",
+            "5" => "E",
+            _ => null
+        };
+        if (!string.IsNullOrEmpty(selectedStoreClassification))
+        {
+            foreach (var index in checkedClassification.OrderByDescending(i => i))
+            {
+                checkedSQL = $@"UPDATE epc_item_exclusive
+                                    SET {chain}{chainletter} = '0'
+                                    WHERE itemNo = '{index.Item1}'";
+                Console.WriteLine($"Checked SQL: {checkedSQL}");
+                await _data.SaveData(checkedSQL, new { }, Configuration.GetConnectionString("DefaultConnection"));
+            }
+        }
+        else
+        {
+            foreach (var index in checkedClassification.OrderByDescending(i => i))
+            {
+                checkedSQL = $@"UPDATE epc_item_exclusive
+                                    SET {chain}A = CASE WHEN {chain}A = '{index.Item2}' THEN '0' ELSE {chain}A END,
+                {chain}B = CASE WHEN {chain}B = '{index.Item2}' THEN '0' ELSE {chain}B END,
+                {chain}C = CASE WHEN {chain}C = '{index.Item2}' THEN '0' ELSE {chain}C END,
+                {chain}D = CASE WHEN {chain}D = '{index.Item2}' THEN '0' ELSE {chain}D END,
+                {chain}E = CASE WHEN {chain}E = '{index.Item2}' THEN '0' ELSE {chain}E END
+                                    WHERE itemNo = '{index.Item1}'
+                                    AND ({chain}A == '{index.Item2}' OR
+                 {chain}B == '{index.Item2}' OR
+                 {chain}C == '{index.Item2}' OR
+                 {chain}D == '{index.Item2}' OR
+                 {chain}E == '{index.Item2}')";
+                Console.WriteLine($"Checked SQL: {checkedSQL}");
+                await _data.SaveData(checkedSQL, new { }, Configuration.GetConnectionString("DefaultConnection"));
+            }
+        }
+        CheckAndDisplayData();
+        checkedClassification.Clear(); // Clear checked items after removal
+        StateHasChanged();
+    }
+
+    private object GetBranchClassification(object branch, string branchclass)
+    {
+        if (string.IsNullOrEmpty(branchclass)) return null;
+        var property = branch.GetType().GetProperty(branchclass);
+        var value = property?.GetValue(branch)?.ToString();
+
+        // Map numeric classification values to corresponding letters
+        string bran = value switch
+        {
+            "1" => "A STORES – EXTRA HIGH",
+            "2" => "B STORES – HIGH",
+            "3" => "C STORES - MEDIUM",
+            "4" => "D STORES - SMALL",
+            "5" => "E STORES - EXTRA SMALL"
+        };
+
+        return bran;
+    }
+
+    private void ShowChilds(string ItemNo)
+    {
+        int index = itemMaintenances.FindIndex(f => f.itemNo.Equals(ItemNo, StringComparison.OrdinalIgnoreCase));
+
+        childVisible[index] = !childVisible[index];
+
+    }
+
+    private void OnChainChanged(ChangeEventArgs e)
+    {
+        selectedChain = (e.Value as string)?.Trim();
+        CheckAndDisplayData();
+    }
+
+    private void OnCategoryChanged(ChangeEventArgs e)
+    {
+        selectedCategory = (e.Value as string)?.Trim();
+        CheckAndDisplayData();
+    }
+
+    private void OnStoreClassificationChanged(ChangeEventArgs e)
+    {
+        selectedStoreClassification = e.Value.ToString();
+        CheckAndDisplayData();
+    }
+
+    private async void CheckAndDisplayData()
+    {
+        // Check if all the selections are not null or empty
+        if (!string.IsNullOrEmpty(selectedChain) &&
+            !string.IsNullOrEmpty(selectedCategory))
+        {
+            CanDisplayData = true;
+            await GetBranchz();
+            await GetItems();
+        }
+        else
+        {
+            CanDisplayData = false;
+        }
+
+        // Force UI to update
+        StateHasChanged();
+    }
+
+    private async Task GetItems()
+    {
+        try
+        {
+            string? chainletter = selectedStoreClassification switch
+            {
+                "1" => "A",
+                "2" => "B",
+                "3" => "C",
+                "4" => "D",
+                "5" => "E",
+                _ => null
+            };
+
+            string? sChain = selectedChain switch
+            {
+                "1" => "vChain",
+                "2" => "sm",
+                "3" => "oHOME",
+                _ => null
+            };
+
+            string getItems;
+
+            // Check if both classification and category are set
+            if (!string.IsNullOrEmpty(selectedStoreClassification))
+            {
+                getItems = $@"SELECT ROW_NUMBER() OVER (ORDER BY b.itemNo) AS Id, b.itemNo, b.subDepartment, b.ItemDescription, b.Size, b.ChildColor, m.brandNames, e.{sChain}{chainletter}
+                          FROM epc_items_barcode b
+                          JOIN epc_item_exclusive e ON e.itemNo = b.ItemNo
+                          JOIN epcbrandsmaintenance m ON m.id = b.Brand
+                          WHERE b.subDepartment = '{selectedCategory}'
+                            AND e.{sChain}{chainletter} > 0";
+            }
+            // Check if only category is set
+            else if (!string.IsNullOrEmpty(selectedCategory))
+            {
+                getItems = $@"SELECT ROW_NUMBER() OVER (ORDER BY b.itemNo) AS Id, b.itemNo, b.subDepartment, b.ItemDescription, b.Size, b.ChildColor, m.brandNames, e.{sChain}A, e.{sChain}B, e.{sChain}C, e.{sChain}D, e.{sChain}E
+                          FROM epc_items_barcode b
+                          JOIN epc_item_exclusive e ON e.itemNo = b.ItemNo
+                          JOIN epcbrandsmaintenance m ON m.id = b.Brand
+                          WHERE b.subDepartment = '{selectedCategory}'
+                            AND (e.{sChain}A > 0 OR e.{sChain}B > 0 OR e.{sChain}C > 0 OR e.{sChain}D > 0 OR e.{sChain}E > 0)";
+            }
+            // If no specific classification or category is selected, retrieve all items
+            else
+            {
+                getItems = $@"SELECT ROW_NUMBER() OVER (ORDER BY b.itemNo) AS Id, b.itemNo, b.subDepartment, b.ItemDescription, b.Size, b.ChildColor, m.brandNames
+                          FROM epc_items_barcode b
+                          JOIN epc_item_exclusive e ON e.itemNo = b.ItemNo
+                          JOIN epcbrandsmaintenance m ON m.id = b.Brand";
+
+            }
+            // Console.WriteLine($"Query Get Item: {getItems}");
+            itemMaintenances = await _data.LoadData<ItemMaintenance, dynamic>(getItems, new { }, Configuration.GetConnectionString("DefaultConnection"));
+
+            filteredItems = itemMaintenances;
+            await ChangePage(1);
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void PageSizeChanged(ChangeEventArgs e)
+    {
+        foreach (var classi in filteredItems)
+        {
+            IJSRuntime.InvokeAsync<string>("console.log", "filteredAllStoreClass", classi);
+        }
+
+        pageSize = int.Parse((e.Value as string)?.Trim());
+        currentPage = 1;
+        ChangePage(1);
+    }
+
+    private async Task ChangePage(int page)
+    {
+        currentPage = page;
+        totalPages = (int)Math.Ceiling((double)filteredItems.Count / pageSize);
+        paginatedItems = filteredItems.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+        StateHasChanged();
+    }
+
+    private async Task SelectPage(int selectedPage)
+    {
+        await ChangePage(selectedPage);
+    }
+
+    private IEnumerable<int> GetPagesToDisplay(int totalPages, int currentPage)
+    {
+        const int pagesToShow = 5;
+
+        if (totalPages <= pagesToShow)
+        {
+            return Enumerable.Range(1, totalPages);
+        }
+
+        var pages = new List<int>();
+
+        // Add the first two pages
+        pages.Add(1);
+        if (totalPages > 2)
+        {
+            pages.Add(2);
+        }
+
+        // Add a separator if necessary
+        if (currentPage > 4)
+        {
+            pages.Add(-1); // -1 represents the "..." separator
+        }
+
+        // Add the current page and its neighbors
+        var start = Math.Max(3, currentPage - 1);
+        var end = Math.Min(totalPages - 2, currentPage + 1);
+        for (int i = start; i <= end; i++)
+        {
+            pages.Add(i);
+        }
+
+        // Add a separator if necessary
+        if (currentPage < totalPages - 3)
+        {
+            pages.Add(-1); // -1 represents the "..." separator
+        }
+
+        // Add the last two pages
+        if (totalPages > 1)
+        {
+            pages.Add(totalPages - 1);
+        }
+        pages.Add(totalPages);
+
+        return pages;
+    }
+
+    private async Task FilterRecords(ChangeEventArgs e)
+    {
+        string searchTerm = (string)e.Value;
+        await FilterRecordsBySearchTerm(searchTerm);
+    }
+
+    private async Task FilterRecordsBySearchTerm(string searchTerm)
+    {
+        if (!string.IsNullOrEmpty(searchTerm))
+        {
+            if (filteredItemsTemp == null)
+                filteredItems = itemMaintenances.Where(pdf => pdf.itemNo.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) || pdf.itemDescription.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+            else
+                filteredItems = filteredItemsTemp.Where(pdf => pdf.itemNo.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) || pdf.itemDescription.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            //await IJSRuntime.InvokeAsync<string>("console.log", "filteredPdfFilestemp", filteredItemsTemp);
+            //await IJSRuntime.InvokeAsync<string>("console.log", "filteredPdfFiles", filteredItems);
+            //await IJSRuntime.InvokeAsync<string>("console.log", "paginatedPdfFiles", paginatedItems);
+        }
+        else
+        {
+            if (filteredItemsTemp != null)
+                filteredItems = filteredItemsTemp.Where(pdf => pdf.itemNo.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) || pdf.itemDescription.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+            else
+                filteredItems = itemMaintenances;
+        }
+        await ChangePage(1);
+        StateHasChanged();
+    }
+
+
+
+
+    private async Task GetBranchz()
+    {
+        try
+        {
+            string branchclass = selectedCategory switch
+            {
+                "LAMPS" => "lampsClassification",
+                "DECOR" => "decorClassification",
+                "FRAMES" => "framesClassification",
+                "CLOCKS" => "clocksClassification",
+                "STATIONERY" => "stationeryClassification"
+            };
+
+            isLoading = true;
+            string getChainCode = $@"SELECT e.branchCode, e.branchName, c.epcCampaignChain, s.name as storeName, c.{branchclass}
+                                    FROM epcbranchmaintenance e
+                                    JOIN epcbranchclass c ON c.branchcode = e.branchCode
+                                    JOIN store_classification s ON s.Id = c.{selectedCategory}Classification
+                                    WHERE c.epcCampaignChain = {selectedChain}";
+            branchMaintenances = await _data.LoadData<BranchMaintenance, dynamic>(getChainCode, new { }, Configuration.GetConnectionString("DefaultConnection"));
+            childVisible = new bool[branchMaintenances.Count()];
+            itemCheckbox = new bool[branchMaintenances.Count()];
+            await GetItems();
+        }
+        catch (Exception ex)
+        {
+            // Handle error (log or display an error message)
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task RemoveChain(string chain, string item)
+    {
+        RemoveItemGroupModal.OpenModal();
+        var confirmResult = await IJSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to remove this chain?");
+        if (confirmResult)
+        {
+            await UpdateChain(chain, item);
+        }
+    }
+
+    private async Task UpdateChain(string chain, string item)
+    {
+        isLoading = true;
+
+        string xchain = selectedChain switch
+        {
+            "1" => "vChain",
+            "2" => "sm",
+            "3" => "oHome"
+        };
+        string? chainletter = selectedStoreClassification switch
+        {
+            "1" => "A",
+            "2" => "B",
+            "3" => "C",
+            "4" => "D",
+            "5" => "E",
+            _ => null
+        };
+        if (!string.IsNullOrEmpty(selectedStoreClassification))
+        {
+            string updateSQL = $@"UPDATE epc_item_exclusive SET {xchain}{chainletter} = 0 WHERE itemNo = '{item}'";
+
+            string logsSQL = $@"INSERT INTO epc_item_m_logs(itemNo, chain, update_From, update_To, updated_By, updated_Date)
+                                VALUES('{item}', '{xchain}{chainletter} equal to {chain}', 'manually', '0', 'user', '{datenow}')";
+
+            // Console.WriteLine($"Executing SQL to remove chain: {updateSQL}");
+            // Console.WriteLine($"Executing SQL to logs: {logsSQL}");
+            await _data.SaveData(updateSQL, new { }, Configuration.GetConnectionString("DefaultConnection"));
+            await _data.SaveData(logsSQL, new { }, Configuration.GetConnectionString("DefaultConnection"));
+        }
+        else
+        {
+            var toRemove = new HashSet<string?>
+            {
+                selectedChain switch
+                {
+                "1" => "vChainA",
+                "2" => "smA",
+                "3" => "oHomeA",
+                _ => null
+                },
+                selectedChain switch
+                {
+                "1" => "vChainB",
+                "2" => "smB",
+                "3" => "oHomeB",
+                _ => null
+                },
+                selectedChain switch
+                {
+                "1" => "vChainC",
+                "2" => "smC",
+                "3" => "oHomeC",
+                _ => null
+                },
+                selectedChain switch
+                {
+                "1" => "vChainD",
+                "2" => "smD",
+                "3" => "oHomeD",
+                _ => null
+                },
+                selectedChain switch
+                {
+                "1" => "vChainE",
+                "2" => "smE",
+                "3" => "oHomeE",
+                _ => null
+                }
+            };
+
+            foreach (var remove in toRemove.Where(r => r != null))
+            {
+                string updateSQL = $@"UPDATE epc_item_exclusive SET {remove} = '0' WHERE {remove} = '{chain}' AND itemNo = '{item}'";
+                // Console.WriteLine($"Executing SQL to remove chain: {updateSQL}");
+                await _data.SaveData(updateSQL, new { }, Configuration.GetConnectionString("DefaultConnection"));
+            }
+            string logsSQL = $@"INSERT INTO epc_item_m_logs(itemNo, chain, update_From, update_To, updated_By, updated_Date)
+                                VALUES('{item}', 'All Store Classification equal to {chain}', 'manually', '0', 'user', '{datenow}')";
+            // Console.WriteLine($"Executing SQL to remove chain: {logsSQL}");
+            await _data.SaveData(logsSQL, new { }, Configuration.GetConnectionString("DefaultConnection"));
+        }
+        CheckAndDisplayData(); // Refresh the data after update
+        isLoading = false;
+        StateHasChanged(); // Refresh UI to reflect the removal
+    }
+
+    private void ShowDeleteModal(string item)
+    {
+        storeCodeToDelete = item;
+        ConfirmationModal.OpenModal();
+
+    }
+
+    private async Task HandleMassConfirm(bool confirmed){
+        if(confirmed){
+            if (checkedItems != null)
+            {
+                await RemoveAllChecked();
+                await RemoveAllClassChecked();
+            }
+        }
+    }
+
+    private async Task HandleConfirm(bool confirmed)
+    {
+        // Console.WriteLine($"Confirm: {confirmed}");
+
+        if (confirmed)
+        {
+            try
+            {
+                string? chainletter = selectedStoreClassification switch
+                {
+                    "1" => "A",
+                    "2" => "B",
+                    "3" => "C",
+                    "4" => "D",
+                    "5" => "E",
+                    _ => null
+                };
+
+                string? sChain = selectedChain switch
+                {
+                    "1" => "vChain",
+                    "2" => "sm",
+                    "3" => "oHOME",
+                    _ => null
+                };
+                // Console.WriteLine($"S Chain: {sChain}");
+                // Console.WriteLine($"Chain Letter: {chainletter}");
+
+                string removequery, logsQuery;
+                if (!string.IsNullOrEmpty(selectedStoreClassification) && !string.IsNullOrEmpty(selectedCategory))
+                {
+                    isLoading = true; // Show loading indicator
+                    removequery = $@"UPDATE epc_item_exclusive
+                                    SET {sChain}{chainletter} = 0
+                                    WHERE itemNo = '{storeCodeToDelete}'";
+
+                    logsQuery = $@"INSERT INTO epc_item_m_logs(ItemNo, chain, update_From, update_To, updated_By, updated_Date)
+                                    VALUES('{storeCodeToDelete}', '{sChain}{chainletter}', 'manually', '0', 'user', '{datenow}')";
+                }
+                else
+                {
+                    isLoading = true; // Show loading indicator
+                    removequery = $@"UPDATE epc_item_exclusive
+                                    SET {sChain}A = 0, {sChain}B = 0, {sChain}C = 0, {sChain}D = 0, {sChain}E = 0
+                                    WHERE itemNo = '{storeCodeToDelete}'";
+
+                    logsQuery = $@"INSERT INTO epc_item_m_logs(ItemNo, chain, update_From, update_To, updated_By, updated_Date)
+                                    VALUES('{storeCodeToDelete}', 'All {sChain}', 'manually', '0', 'user', '{datenow}')";
+                }
+                // Console.WriteLine($"Update SQL: {removequery}");
+                // Console.WriteLine($"Update SQL: {logsQuery}");
+                await _data.SaveData(removequery, new { }, Configuration.GetConnectionString("DefaultConnection"));
+                await _data.SaveData(logsQuery, new { }, Configuration.GetConnectionString("DefaultConnection"));
+                CheckAndDisplayData(); // Refresh the data after update
+                isLoading = false; // Hide loading indicator
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in Remove: {ex.Message}");
+            }
+
+            //nameOfStores.Remove(storeCodeToDelete);
+            storeCodeToDelete = null; // Reset the item to delete
+        }
+    }
+
+    private async Task HandleCancel(bool canceled)
+    {
+        storeCodeToDelete = null; // Reset the item to delete
+    }
+
+    private RenderFragment ModalBodyContent => builder =>
+    {
+        builder.OpenElement(0, "p");
+        builder.AddContent(1, "Are you sure you want to remove?");
+        builder.CloseElement();
+    };
+
+    private void OpenModal()
+    {
+        modal.OpenModal();
+    }
+
+    private async Task Template()
+    {
+
+        using (var workbook = new XSSFWorkbook())
+        {
+            var sheet = workbook.CreateSheet("Template");
+
+            // Creating header
+            var headerRow = sheet.CreateRow(0);
+            headerRow.CreateCell(0).SetCellValue("Chain");
+            headerRow.CreateCell(1).SetCellValue("Category");
+            headerRow.CreateCell(2).SetCellValue("Store Classification");
+            headerRow.CreateCell(3).SetCellValue("Item No");
+            headerRow.CreateCell(4).SetCellValue("Item Description");
+            headerRow.CreateCell(4).SetCellValue("Item Classification");
+
+            var row = sheet.CreateRow(1);  // Data starts from the second row
+            row.CreateCell(0).SetCellValue("SM HOMEWORLD");
+            row.CreateCell(1).SetCellValue("DECOR");
+            row.CreateCell(2).SetCellValue("A STORES - EXTRA HIGH");
+            row.CreateCell(3).SetCellValue("2060050205165362");
+            row.CreateCell(4).SetCellValue("O/R HOSH BASIC PILLAR CANLDE");
+            row.CreateCell(5).SetCellValue("B STORES - HIGH");
+
+            using (var stream = new MemoryStream())
+            {
+
+                workbook.Write(stream);
+                var byteArray = stream.ToArray();
+                var fileName = $"Item_Maintenance.xlsx";
+
+                // Convert to base64 and trigger download via JS Interop
+                await IJSRuntime.InvokeVoidAsync("downloadFileFromStream", fileName, new DotNetStreamReference(stream: new MemoryStream(byteArray)));
+            }
+
+        }
+    }
+
+    public class SheetData
+    {
+        public string FileName { get; set; }
+        public string SheetName { get; set; }
+        public List<List<object>> CellValue { get; set; }
+        public string MonthName { get; set; }
+    }
+
+    async Task HandleFileChangeSol(InputFileChangeEventArgs e)
+    {
+        sheetDataList = await ImportExcelFile(e);
+        await UploadBranchMaintenance();
+        StateHasChanged();
+    }
+
+    async Task<List<SheetData>> ImportExcelFile(InputFileChangeEventArgs e)
+    {
+        List<SheetData> sheetDataList = new List<SheetData>();
+
+        foreach (var file in e.GetMultipleFiles(1))
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                await file.OpenReadStream(maxAllowedSize: 1024 * 2000).CopyToAsync(ms);
+                ms.Position = 0;
+
+                string fileName = file.Name; // Get the file name
+
+                // Determine the Excel format (XLS or XLSX) based on the file extension
+                string fileExtension = Path.GetExtension(file.Name).ToLower();
+                IWorkbook workbook;
+                if (fileExtension == ".xls")
+                {
+                    workbook = new HSSFWorkbook(ms); // For XLS files
+                }
+                else if (fileExtension == ".xlsx")
+                {
+                    workbook = new XSSFWorkbook(ms); // For XLSX files
+                }
+                else
+                {
+                    Console.WriteLine($"{fileName} is not Excel File");
+                    continue;
+                }
+                ISheet sheet = workbook.GetSheetAt(0);
+                var sheetData = new SheetData();
+                sheetData.FileName = fileName; // Set the file name
+                sheetData.SheetName = sheet.SheetName;
+                sheetData.CellValue = new List<List<object>>();
+
+                Console.WriteLine($"Processing sheet: {sheetData.SheetName} from file: {fileName}");
+
+                for (int row = 0; row <= sheet.LastRowNum; row++)
+                {
+                    IRow currentRow = sheet.GetRow(row);
+                    if (currentRow != null)
+                    {
+                        List<object> rowData = new List<object>();
+                        for (int col = 0; col < currentRow.LastCellNum; col++)
+                        {
+
+                            ICell cell = currentRow.GetCell(col);
+                            if (cell != null)
+                            {
+                                string cellValue = cell.ToString();
+
+                                rowData.Add(cell.ToString());
+                            }
+                            else
+                            {
+                                rowData.Add(null);
+                            }
+                        }
+                        sheetData.CellValue.Add(rowData);
+                    }
+                }
+                sheetDataList.Add(sheetData);
+            }
+        }
+        return sheetDataList;
+    }
+
+    private async Task UploadBranchMaintenance()
+    {
+        Console.WriteLine("Upload Item Maintenance method triggered.");
+
+        try
+        {
+            if (sheetDataList == null || !sheetDataList.Any())
+            {
+                Console.WriteLine("No data in sheetDataList.");
+                return;
+            }
+
+            foreach (var data in sheetDataList)
+            {
+                if (data.CellValue == null || !data.CellValue.Any())
+                {
+                    Console.WriteLine("CellValue is null.");
+                    continue; // Skip to the next data item
+                }
+
+                bool isFirstRow = true; // Flag to identify the header row
+
+                foreach (var row in data.CellValue)
+                {
+                    // Skip the header row
+                    if (isFirstRow)
+                    {
+                        isFirstRow = false;
+                        continue;
+                    }
+
+                    int cellCount = 0;
+                    sheetChain = sheetCategory = sheetClassification = sheetItemNo = sheetItemDescription = sheetItemClassfication = null;
+
+                    foreach (var cell in row)
+                    {
+                        cellCount++;
+
+                        switch (cellCount)
+                        {
+                            case 1:
+                                sheetChain = cell.ToString() switch
+                                {
+                                    "VARIOUS CHAIN" => "vChain",
+                                    "SM HOMEWORLD" => "sm",
+                                    "OUR HOME" => "oHome",
+                                    _ => null
+                                };
+                                break;
+                            case 2:
+                                sheetCategory = cell.ToString();
+                                break;
+                            case 3:
+                                sheetClassification = cell.ToString() switch
+                                {
+                                    "A STORES - EXTRA HIGH" => "A",
+                                    "B STORES - HIGH" => "B",
+                                    "C STORES - MEDIUM" => "C",
+                                    "D STORES - SMALL" => "D",
+                                    "E STORES - EXTRA SMALL" => "E",
+                                    _ => null
+                                };
+                                break;
+                            case 4:
+                                sheetItemNo = cell.ToString();
+                                break;
+                            case 5:
+                                sheetItemDescription = cell.ToString();
+                                break;
+                            case 6:
+                                var cellValue = cell.ToString().Trim();
+                                Console.WriteLine($"Raw value for Item Classification (cell 6): '{cellValue}'"); // Debug line
+                                sheetItemClassfication = cellValue switch
+                                {
+                                    "A STORES - EXTRA HIGH" => "1",
+                                    "B STORES - HIGH" => "2",
+                                    "C STORES - MEDIUM" => "3",
+                                    "D STORES - SMALL" => "4",
+                                    "E STORES - EXTRA SMALL" => "5",
+                                    _ => null
+                                };
+
+                                Console.WriteLine($"Item Classification: '{sheetItemClassfication}'");
+                                break;
+                        }
+                    }
+
+                    if (!string.IsNullOrEmpty(sheetItemNo) &&
+                        !string.IsNullOrEmpty(sheetClassification) &&
+                        !string.IsNullOrEmpty(sheetChain) &&
+                        !string.IsNullOrEmpty(sheetCategory) &&
+                        !string.IsNullOrEmpty(sheetItemClassfication))
+                    {
+                        var sheetQuery = $@"UPDATE epc_item_exclusive
+                                        SET {sheetChain}{sheetClassification} = {sheetItemClassfication}
+                                        WHERE ItemNo = '{sheetItemNo}'";
+
+                        var logsSQL = $@"INSERT INTO epc_item_m_logs (itemNo, chain, update_From, update_To, updated_By, updated_Date)
+                                        VALUES ('{sheetItemNo}', '{sheetChain}{sheetClassification}','Excel Upload', '{sheetItemClassfication}', 'excel user', '{datenow}')";
+
+                        try
+                        {
+                            await _data.SaveData(sheetQuery, new { }, Configuration.GetConnectionString("DefaultConnection"));
+                            await _data.SaveData(logsSQL, new { }, Configuration.GetConnectionString("DefaultConnection"));
+                            // Console.WriteLine($"Sheet Query Executed: {sheetQuery}");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error executing query: {ex.Message}");
+                            // Log the error with more details for debugging
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Required data missing. Skipping row.");
+                        // Console.WriteLine($"Debug Info: Chain={sheetChain}, Category={sheetCategory}, Classification={sheetClassification}, Item No={sheetItemNo}, Item Classification = {sheetItemClassfication}");
+                    }
+                }
+
+                Console.WriteLine("Successfully uploaded data for this data item.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in Upload Branch Maintenance: {ex.Message}");
+            // Log the error with more details for debugging
+        }
+    }
+}

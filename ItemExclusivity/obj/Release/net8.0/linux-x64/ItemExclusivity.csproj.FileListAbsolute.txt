@@ -1,0 +1,223 @@
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/appsettings.Development.json
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/appsettings.json
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/ItemExclusivity.staticwebassets.runtime.json
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/ItemExclusivity.staticwebassets.endpoints.json
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/ItemExclusivity
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/ItemExclusivity.deps.json
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/ItemExclusivity.runtimeconfig.json
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/ItemExclusivity.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/ItemExclusivity.pdb
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/BouncyCastle.Cryptography.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/Dapper.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/Enums.NET.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/EPPlus.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/EPPlus.Interfaces.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/EPPlus.System.Drawing.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/ExtendedNumerics.BigDecimal.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/MathNet.Numerics.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.AspNetCore.Cryptography.Internal.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.EntityFrameworkCore.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.EntityFrameworkCore.Abstractions.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.EntityFrameworkCore.Relational.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.Extensions.Identity.Core.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.Extensions.Identity.Stores.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.Extensions.Options.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.IO.RecyclableMemoryStream.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.Win32.SystemEvents.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/MySqlConnector.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/Newtonsoft.Json.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/NLog.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/NPOI.Core.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/NPOI.OOXML.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/NPOI.OpenXml4Net.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/NPOI.OpenXmlFormats.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/Pomelo.EntityFrameworkCore.MySql.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/ICSharpCode.SharpZipLib.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/SixLabors.Fonts.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/SixLabors.ImageSharp.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/System.Configuration.ConfigurationManager.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/System.Drawing.Common.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/System.Security.Cryptography.ProtectedData.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/System.Security.Permissions.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/System.Windows.Extensions.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.csproj.AssemblyReference.cache
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/Interop.SAPbobsCOM.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.csproj.ResolveComReference.cache
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.GeneratedMSBuildEditorConfig.editorconfig
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.AssemblyInfoInputs.cache
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.AssemblyInfo.cs
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.csproj.CoreCompileInputs.cache
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.MvcApplicationPartsAssemblyInfo.cache
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.RazorAssemblyInfo.cache
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.RazorAssemblyInfo.cs
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.sourcelink.json
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/scopedcss/Pages/EPC/Modal.razor.rz.scp.css
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/scopedcss/Pages/ExMaintenance.razor.rz.scp.css
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/scopedcss/Shared/MainLayout.razor.rz.scp.css
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/scopedcss/Shared/NavMenu.razor.rz.scp.css
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/scopedcss/bundle/ItemExclusivity.styles.css
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/scopedcss/projectbundle/ItemExclusivity.bundle.scp.css
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/staticwebassets.build.json
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/staticwebassets.development.json
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/staticwebassets.build.endpoints.json
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/staticwebassets/msbuild.ItemExclusivity.Microsoft.AspNetCore.StaticWebAssets.props
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/staticwebassets/msbuild.ItemExclusivity.Microsoft.AspNetCore.StaticWebAssetEndpoints.props
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/staticwebassets/msbuild.build.ItemExclusivity.props
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/staticwebassets/msbuild.buildMultiTargeting.ItemExclusivity.props
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/staticwebassets/msbuild.buildTransitive.ItemExclusivity.props
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/staticwebassets.pack.json
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/staticwebassets.upToDateCheck.txt
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExcl.05B17DA3.Up2Date
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/refint/ItemExclusivity.dll
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.pdb
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.genruntimeconfig.cache
+Z:/ItemExclusivity v2/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/ref/ItemExclusivity.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.csproj.AssemblyReference.cache
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.GeneratedMSBuildEditorConfig.editorconfig
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.AssemblyInfoInputs.cache
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.AssemblyInfo.cs
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.csproj.CoreCompileInputs.cache
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.MvcApplicationPartsAssemblyInfo.cache
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.RazorAssemblyInfo.cache
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.RazorAssemblyInfo.cs
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.sourcelink.json
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/refint/ItemExclusivity.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.pdb
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/appsettings.Development.json
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/appsettings.json
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/ItemExclusivity.staticwebassets.runtime.json
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/ItemExclusivity
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/ItemExclusivity.deps.json
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/ItemExclusivity.runtimeconfig.json
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/ItemExclusivity.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/ItemExclusivity.pdb
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/BouncyCastle.Cryptography.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/Dapper.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/Enums.NET.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/EPPlus.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/EPPlus.Interfaces.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/EPPlus.System.Drawing.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/ExtendedNumerics.BigDecimal.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/MathNet.Numerics.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.AspNetCore.Cryptography.Internal.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.AspNetCore.Server.Kestrel.Https.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.AspNetCore.Server.Kestrel.Transport.Abstractions.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.EntityFrameworkCore.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.EntityFrameworkCore.Abstractions.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.EntityFrameworkCore.Relational.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.Extensions.Identity.Core.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.Extensions.Identity.Stores.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.Extensions.Options.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.IO.RecyclableMemoryStream.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.Win32.SystemEvents.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/MySqlConnector.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/Newtonsoft.Json.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/NLog.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/NPOI.Core.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/NPOI.OOXML.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/NPOI.OpenXml4Net.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/NPOI.OpenXmlFormats.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/Pomelo.EntityFrameworkCore.MySql.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/ICSharpCode.SharpZipLib.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/SixLabors.Fonts.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/SixLabors.ImageSharp.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/System.Configuration.ConfigurationManager.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/System.Drawing.Common.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/System.Security.Cryptography.ProtectedData.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/System.Security.Permissions.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/bin/Release/net8.0/linux-x64/System.Windows.Extensions.dll
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/staticwebassets.build.json
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/staticwebassets.development.json
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/staticwebassets/msbuild.ItemExclusivity.Microsoft.AspNetCore.StaticWebAssets.props
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/staticwebassets/msbuild.build.ItemExclusivity.props
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/staticwebassets/msbuild.buildMultiTargeting.ItemExclusivity.props
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/staticwebassets/msbuild.buildTransitive.ItemExclusivity.props
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/staticwebassets.pack.json
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/scopedcss/Pages/EPC/Modal.razor.rz.scp.css
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/scopedcss/Pages/ExMaintenance.razor.rz.scp.css
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/scopedcss/Shared/MainLayout.razor.rz.scp.css
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/scopedcss/Shared/NavMenu.razor.rz.scp.css
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/scopedcss/bundle/ItemExclusivity.styles.css
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/scopedcss/projectbundle/ItemExclusivity.bundle.scp.css
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.csproj.CopyComplete
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.genruntimeconfig.cache
+/home/sambashare/ItemExclusivity v2/ItemExclusivity/obj/Release/net8.0/linux-x64/ref/ItemExclusivity.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/appsettings.Development.json
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/appsettings.json
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/ItemExclusivity.staticwebassets.runtime.json
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/ItemExclusivity
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/ItemExclusivity.deps.json
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/ItemExclusivity.runtimeconfig.json
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/ItemExclusivity.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/ItemExclusivity.pdb
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/BouncyCastle.Cryptography.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/Dapper.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/Enums.NET.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/EPPlus.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/EPPlus.Interfaces.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/EPPlus.System.Drawing.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/ExtendedNumerics.BigDecimal.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/MathNet.Numerics.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.AspNetCore.Server.Kestrel.Https.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.AspNetCore.Server.Kestrel.Transport.Abstractions.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.EntityFrameworkCore.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.EntityFrameworkCore.Abstractions.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.EntityFrameworkCore.Relational.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.IO.RecyclableMemoryStream.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.Win32.SystemEvents.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/MySqlConnector.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/Newtonsoft.Json.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/NLog.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/NPOI.Core.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/NPOI.OOXML.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/NPOI.OpenXml4Net.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/NPOI.OpenXmlFormats.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/Pomelo.EntityFrameworkCore.MySql.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/ICSharpCode.SharpZipLib.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/SixLabors.Fonts.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/SixLabors.ImageSharp.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/System.Configuration.ConfigurationManager.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/System.Drawing.Common.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/System.Security.Cryptography.ProtectedData.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/System.Security.Permissions.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/System.Windows.Extensions.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.csproj.AssemblyReference.cache
+/home/sambashare/ItemExclusivity/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.GeneratedMSBuildEditorConfig.editorconfig
+/home/sambashare/ItemExclusivity/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.AssemblyInfoInputs.cache
+/home/sambashare/ItemExclusivity/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.AssemblyInfo.cs
+/home/sambashare/ItemExclusivity/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.csproj.CoreCompileInputs.cache
+/home/sambashare/ItemExclusivity/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.MvcApplicationPartsAssemblyInfo.cache
+/home/sambashare/ItemExclusivity/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.RazorAssemblyInfo.cache
+/home/sambashare/ItemExclusivity/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.RazorAssemblyInfo.cs
+/home/sambashare/ItemExclusivity/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.sourcelink.json
+/home/sambashare/ItemExclusivity/ItemExclusivity/obj/Release/net8.0/linux-x64/staticwebassets.build.json
+/home/sambashare/ItemExclusivity/ItemExclusivity/obj/Release/net8.0/linux-x64/staticwebassets.development.json
+/home/sambashare/ItemExclusivity/ItemExclusivity/obj/Release/net8.0/linux-x64/staticwebassets/msbuild.ItemExclusivity.Microsoft.AspNetCore.StaticWebAssets.props
+/home/sambashare/ItemExclusivity/ItemExclusivity/obj/Release/net8.0/linux-x64/staticwebassets/msbuild.build.ItemExclusivity.props
+/home/sambashare/ItemExclusivity/ItemExclusivity/obj/Release/net8.0/linux-x64/staticwebassets/msbuild.buildMultiTargeting.ItemExclusivity.props
+/home/sambashare/ItemExclusivity/ItemExclusivity/obj/Release/net8.0/linux-x64/staticwebassets/msbuild.buildTransitive.ItemExclusivity.props
+/home/sambashare/ItemExclusivity/ItemExclusivity/obj/Release/net8.0/linux-x64/staticwebassets.pack.json
+/home/sambashare/ItemExclusivity/ItemExclusivity/obj/Release/net8.0/linux-x64/scopedcss/Pages/EPC/Modal.razor.rz.scp.css
+/home/sambashare/ItemExclusivity/ItemExclusivity/obj/Release/net8.0/linux-x64/scopedcss/Pages/ExMaintenance.razor.rz.scp.css
+/home/sambashare/ItemExclusivity/ItemExclusivity/obj/Release/net8.0/linux-x64/scopedcss/Shared/MainLayout.razor.rz.scp.css
+/home/sambashare/ItemExclusivity/ItemExclusivity/obj/Release/net8.0/linux-x64/scopedcss/Shared/NavMenu.razor.rz.scp.css
+/home/sambashare/ItemExclusivity/ItemExclusivity/obj/Release/net8.0/linux-x64/scopedcss/bundle/ItemExclusivity.styles.css
+/home/sambashare/ItemExclusivity/ItemExclusivity/obj/Release/net8.0/linux-x64/scopedcss/projectbundle/ItemExclusivity.bundle.scp.css
+/home/sambashare/ItemExclusivity/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.csproj.CopyComplete
+/home/sambashare/ItemExclusivity/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/obj/Release/net8.0/linux-x64/refint/ItemExclusivity.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.pdb
+/home/sambashare/ItemExclusivity/ItemExclusivity/obj/Release/net8.0/linux-x64/ItemExclusivity.genruntimeconfig.cache
+/home/sambashare/ItemExclusivity/ItemExclusivity/obj/Release/net8.0/linux-x64/ref/ItemExclusivity.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.AspNetCore.Cryptography.Internal.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.Extensions.Identity.Core.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.Extensions.Identity.Stores.dll
+/home/sambashare/ItemExclusivity/ItemExclusivity/bin/Release/net8.0/linux-x64/Microsoft.Extensions.Options.dll

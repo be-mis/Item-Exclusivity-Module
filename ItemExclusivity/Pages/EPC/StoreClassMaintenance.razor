@@ -1,0 +1,1393 @@
+@page "/epc/storeclassification"
+
+@using ItemExclusivity.Data
+@using ItemExclusivity.Models
+@inject IJSRuntime IJSRuntime
+@inject IConfiguration Configuration
+@inject NavigationManager NavigationManager
+@inject IMyDataConnection _data
+
+@using Microsoft.AspNetCore.Components.Web
+@using System.Diagnostics
+@using NPOI.HSSF.UserModel
+@using NPOI.SS.UserModel
+@using NPOI.XSSF.UserModel
+
+<style>
+
+    table {
+    width: 100%;
+    }
+
+    tr td {
+    font-size: 14px;
+    }
+
+    tr td a {
+    text-decoration: none
+    }
+
+    tr td a:hover {
+    color: #00A3AD;
+    font-weight: bold;
+    }
+
+    thead tr th {
+    padding: 4px 6px;
+    }
+
+    tbody tr td {
+    padding: 4px 6px;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    }
+
+    tbody tr:hover {
+    background-color: #f8d7da;
+    color: black;
+    font-weight: bold;
+    }
+
+    td button {
+    border: none;
+    background-color: transparent;
+    }
+
+    td button:hover {
+    text-decoration: underline;
+    font-weight: bold;
+    }
+
+
+    .submit-button {
+    border-radius: 2px;
+    }
+
+    .label-button {
+    color: #00A3AD !important;
+    cursor: pointer;
+    border-radius: 2px;
+    }
+
+    .label-button:hover {
+    color: white !important;
+    }
+
+
+    .remove-button {
+    border: 1px solid #AA0061;
+    background-color: white;
+    padding: 2px 6px !important;
+    color: #AA0061;
+    }
+
+    .remove-button:hover {
+    color: #FFFFFF;
+    background-color: #AA0061;
+    border: 1px solid #AA0061;
+    }
+
+    .clear-button{
+    margin-top:auto;
+    width: fit-content;
+    border: 2px solid #4B5563;
+    background-color: #4B5563;
+    padding: 1px 16px;
+    color: white;"
+    }
+    .clear-button:hover{
+    background-color: white;
+    color: #4B5563;
+    }
+
+    .remove-selected-button {
+    border: 2px solid #AA0061;
+    background-color: white;
+    padding: 2px 12px;
+    color: #AA0061;
+    border-radius: 2px;
+    }
+
+    .remove-selected-button:hover {
+    color: white;
+    background-color: #AA0061;
+    }
+
+    .border-container {
+    border: 2px solid #00A3AD;
+    padding: 20px;
+    position: relative; /* Needed for absolute positioning of the legend */
+    font-weight: bold;
+    width: fit-content;
+    margin-right: auto;
+    margin-left: auto;
+    }
+
+    .legend {
+    color: #00A3AD;
+    background-color: white; /* Background color for the legend */
+    position: absolute; /* Positioning the legend */
+    top: -12px; /* Adjust as necessary */
+    left: 10px; /* Adjust as necessary */
+    padding: 0 5px; /* Padding around the legend text */
+    font-weight: bold; /* Make the legend text bold */
+    }
+
+    .pagination-number {
+    border-radius: 2px;
+    width: 30px;
+    height: 30px;
+    margin: 0px 10px;
+    border: 1px solid #00A3AD;
+    color: #00A3AD;
+    background-color: none;
+    }
+
+    .pagination-next {
+    background-color: #fff;
+    border: none;
+    }
+
+    .pagination-next .icon-next {
+    height: 25px;
+    width: 20px;
+    }
+
+    .pagination-prev {
+    background-color: #fff;
+    border: none;
+    }
+
+    .pagination-prev .icon-prev {
+    height: 25px;
+    width: 20px;
+    }
+
+    .select-size {
+    color: #00A3AD;
+    margin-right: 10px;
+    border: 1px solid #00A3AD;
+    }
+
+    button.active {
+    background-color: #00A3AD;
+    color: #ffffff;
+    }
+</style>
+
+<div class="container">
+    <div class="form-top"></div>
+    <div class="form-content" style="padding: 20px;">
+        <div class="grid grid-cols-2">
+            <div class="col-span-1">
+                <p class="upload-memorandum">
+                    <span class="upload">Store Classification </span>
+                    <span class="memorandum">Maintenance</span>
+                </p>
+                @if(!string.IsNullOrEmpty(successMessage)){
+                    @if (!success)
+                    {
+                        <p class="alert alert-danger">
+                            @successMessage
+                        </p>
+                    }else{
+                        <p class="alert alert-success">
+                            @successMessage
+                        </p>
+                    }
+                }
+
+            </div>
+
+            <div class="col-span-1">
+                <button class="submit-button" @onclick="OpenModal">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" height="20" width="20" viewBox="0 0 512 512"><path d="M448 256c0-106-86-192-192-192S64 150 64 256s86 192 192 192 192-86 192-192z" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="32" /><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M256 176v160M336 256H176" /></svg>Add Branch
+                </button>
+
+                <InputFile OnChange="@HandleFileChangeSol" accept=".xls,.xlsx" multiple="false" name="file" id="file" hidden />
+                <label class="submit-button label-button" style="padding: 4px 20px 3px 20px;" for="file">
+                    <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 1.25C12.2189 1.25 12.427 1.34567 12.5694 1.51191L15.5694 5.01191C15.839 5.3264 15.8026 5.79988 15.4881 6.06944C15.1736 6.33901 14.7001 6.30259 14.4306 5.98809L12.75 4.02744L12.75 15C12.75 15.4142 12.4142 15.75 12 15.75C11.5858 15.75 11.25 15.4142 11.25 15L11.25 4.02744L9.56944 5.98809C9.29988 6.30259 8.8264 6.33901 8.51191 6.06944C8.19741 5.79988 8.16099 5.3264 8.43056 5.01191L11.4306 1.51191C11.573 1.34567 11.7811 1.25 12 1.25ZM6.99583 8.25196C7.41003 8.24966 7.74768 8.58357 7.74999 8.99778C7.7523 9.41198 7.41838 9.74963 7.00418 9.75194C5.91068 9.75803 5.1356 9.78642 4.54735 9.89448C3.98054 9.99859 3.65246 10.1658 3.40901 10.4092C3.13225 10.686 2.9518 11.0746 2.85315 11.8083C2.75159 12.5637 2.75 13.5648 2.75 15.0002V16.0002C2.75 17.4356 2.75159 18.4367 2.85315 19.1921C2.9518 19.9259 3.13225 20.3144 3.40901 20.5912C3.68577 20.868 4.07434 21.0484 4.80812 21.1471C5.56347 21.2486 6.56458 21.2502 8 21.2502H16C17.4354 21.2502 18.4365 21.2486 19.1919 21.1471C19.9257 21.0484 20.3142 20.868 20.591 20.5912C20.8678 20.3144 21.0482 19.9259 21.1469 19.1921C21.2484 18.4367 21.25 17.4356 21.25 16.0002V15.0002C21.25 13.5648 21.2484 12.5637 21.1469 11.8083C21.0482 11.0746 20.8678 10.686 20.591 10.4092C20.3475 10.1658 20.0195 9.99859 19.4527 9.89448C18.8644 9.78642 18.0893 9.75803 16.9958 9.75194C16.5816 9.74963 16.2477 9.41198 16.25 8.99778C16.2523 8.58357 16.59 8.24966 17.0042 8.25196C18.0857 8.25798 18.9871 8.28387 19.7236 8.41916C20.4816 8.55839 21.1267 8.82363 21.6517 9.34856C22.2536 9.95048 22.5125 10.7084 22.6335 11.6085C22.75 12.4754 22.75 13.5778 22.75 14.9453V16.0551C22.75 17.4227 22.75 18.525 22.6335 19.392C22.5125 20.2921 22.2536 21.0499 21.6517 21.6519C21.0497 22.2538 20.2919 22.5127 19.3918 22.6337C18.5248 22.7503 17.4225 22.7502 16.0549 22.7502H7.94513C6.57754 22.7502 5.47522 22.7503 4.60825 22.6337C3.70814 22.5127 2.95027 22.2538 2.34835 21.6519C1.74643 21.0499 1.48754 20.2921 1.36652 19.392C1.24996 18.525 1.24998 17.4227 1.25 16.0551V14.9453C1.24998 13.5777 1.24996 12.4754 1.36652 11.6085C1.48754 10.7084 1.74643 9.95048 2.34835 9.34856C2.87328 8.82363 3.51835 8.55839 4.27635 8.41916C5.01291 8.28386 5.9143 8.25798 6.99583 8.25196Z" />
+                    </svg>
+                    Upload
+                </label>
+
+                <button class="submit-button" @onclick="Template">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="none" d="M8 17.5V15.5C8 14.6716 8.67157 14 9.5 14H14.5C15.3284 14 16 14.6716 16 15.5V17.5C16 18.3284 15.3284 19 14.5 19H9.5C8.67157 19 8 18.3284 8 17.5Z" stroke-width="1.5" stroke-linecap="round" />
+                        <path fill="currentcolor" stroke="none" d="M8 15.75V17.5C8 17.5852 8.0071 17.6687 8.02074 17.75H6.25C4.86929 17.75 3.75 16.6307 3.75 15.25V10.25C3.75 8.86929 4.86929 7.75 6.25 7.75H17.25C18.6307 7.75 19.75 8.86929 19.75 10.25V15.25C19.75 16.6307 18.6307 17.75 17.25 17.75H15.9793C15.9929 17.6687 16 17.5852 16 17.5V15.75H17.25C17.5261 15.75 17.75 15.5261 17.75 15.25V10.25C17.75 9.97386 17.5261 9.75 17.25 9.75H6.25C5.97386 9.75 5.75 9.97386 5.75 10.25V15.25C5.75 15.5261 5.97386 15.75 6.25 15.75H8ZM10.25 5.25C10.25 4.97386 10.4739 4.75 10.75 4.75H13.25C13.5261 4.75 13.75 4.97386 13.75 5.25V5.75C13.75 6.30228 14.1977 6.75 14.75 6.75C15.3023 6.75 15.75 6.30228 15.75 5.75V5.25C15.75 3.86929 14.6307 2.75 13.25 2.75H10.75C9.36929 2.75 8.25 3.86929 8.25 5.25V5.75C8.25 6.30228 8.69772 6.75 9.25 6.75C9.80228 6.75 10.25 6.30228 10.25 5.75V5.25Z" />
+                    </svg>
+                    Template
+                </button>
+            </div>
+            <br />
+            <div class="col-span-2" style="display: flex; justify-content: space-between; gap: 20px;">
+                <!-- CHAIN -->
+                <div style="width: 100%">
+                    <label>Chain*</label><br />
+                    <select class="select-input" @onchange="OnChainChanged" disabled="@(!string.IsNullOrEmpty(selectedChain) || isLoading)">
+                        <option value="">-- Select Chain --</option>
+                        <option value="1">Variuos Chain</option>
+                        <option value="2">SM HOMEWORLD</option>
+                        <option value="3">OUR HOME</option>
+                    </select>
+                </div>
+                <!-- CATEGORY -->
+                <div style="width: 100%">
+                    <label>Category*</label><br />
+                    <select class="select-input" @onchange="OnCategoryChanged" disabled="@(!string.IsNullOrEmpty(selectedCategory) || string.IsNullOrEmpty(selectedChain))">
+                        <option value="">-- Select Category --</option>
+                        <option value="LAMPS">LAMPS</option>
+                        <option value="DECOR">DECOR</option>
+                        @if (selectedChain != "1")
+                        {
+                            <option value="FRAMES">FRAMES</option>
+                        }
+                        @if (selectedChain != "2")
+                        {
+                            <option value="CLOCKS">CLOCKS</option>
+                        }
+                        @if (selectedChain == "1")
+                        {
+                            <option value="STATIONERY">STATIONERY</option>
+                        }
+                    </select>
+                </div>
+                <!-- Store Classification -->
+                <div style="width: 100%">
+                    <label>Store Classification*</label><br />
+                    <select class="select-input" @onchange="OnStoreClassificationChanged" disabled="@(!string.IsNullOrEmpty(selectedStoreClassification) || string.IsNullOrEmpty(selectedCategory))">
+                        <option value="">-- ALL --</option>
+                        @foreach (var store in classifications)
+                        {
+                            <option value="@store.Id">@store.Name</option>
+                        }
+                    </select>
+                </div>
+                <!-- Store Classification -->
+                <div style="width:fit-content; white-space: nowrap;height: auto; display: flex; flex-direction: column;">
+                    <button class="clear-button" @onclick="ClearDropDown">
+                        Clear Filter
+                    </button>
+                </div>
+            </div>
+            <br />
+            @if (PerStoreClass || CanDisplayData)
+            {
+                <div class="border-container grid grid-cols-2 col-span-2">
+                    <span class="legend">Title Legend</span>
+                    <div class="col-span-1 flex flex-col">
+                        <i>
+                            A STORES – EXTRA HIGH = @extraHigh <br />
+                            B STORES – HIGH = @high <br />
+                            C STORES – MEDIUM = @medium <br />
+                        </i>
+                    </div>
+                    <div class="col-span-1 flex flex-col">
+                        <i>
+                            D STORES – SMALL = @small<br />
+                            E STORES – EXTRA SMALL = @extraSmall<br />
+                        </i>
+                    </div>
+                </div>
+            }
+
+
+            @if (PerStoreClass)
+            {
+                <br />
+                <div style="display:flex;justify-content:space-between;" class="col-span-2">
+                    <div class="col-span-1" style="width: 30%">
+                        <input style="width:100%" id="search_input" name="search_input" type="text" placeholder="Search for Branch Code and Branch Name..." @bind="searchInput" @oninput="FilterRecords" />
+                    </div>
+                    <div>
+                        <button class="remove-selected-button" @onclick="ConfirmBeforeRemoving">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" class="ionicon" viewBox="0 0 512 512"><path d="M112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" /><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M80 112h352" /><path d="M192 112V72h0a23.93 23.93 0 0124-24h80a23.93 23.93 0 0124 24h0v40M256 176v224M184 176l8 224M328 176l-8 224" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" /></svg> Remove All
+                        </button>
+                        @* <button class="remove-selected-button">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" class="ionicon" viewBox="0 0 512 512"><path d="M112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" /><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M80 112h352" /><path d="M192 112V72h0a23.93 23.93 0 0124-24h80a23.93 23.93 0 0124 24h0v40M256 176v224M184 176l8 224M328 176l-8 224" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" /></svg> Remove Selected
+                        </button> *@
+
+                    </div>
+                </div>
+                <br />
+                @if (isLoading)
+                {
+                    <p>Loading...</p>
+                }
+                else
+                {
+
+                    @if (branchMaintenances != null && branchMaintenances.Any())
+                    {
+                        @foreach (var letter in classifications)
+                        {
+                            if (letter.Id.ToString() == selectedStoreClassification)
+                            {
+                                <div class="col-span-2">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th width="20%">Branch Code</th>
+                                                <th width="50%">Branch Name</th>
+                                                <th width="20%">Store Classification</th>
+                                                <th width="10%">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var branch in paginatedAllStoreClass)
+                                            {
+                                                <tr>
+                                                    <td>@branch.branchCode</td>
+                                                    <td>@branch.branchName</td>
+                                                    <td>
+                                                        <select class="select-input" @onchange="@(e => StoreClassChange(e, branch.branchCode, branch.branchName, letter.Id))">
+                                                            @foreach (var alpha in classifications)
+                                                            {
+                                                                <option value="@alpha.Id" selected="@(alpha.Id == letter.Id ? "selected" : null)">
+                                                                    @alpha.Name
+                                                                </option>
+                                                            }
+                                                        </select>
+                                                    </td>
+                                                    <td>
+                                                        <button class="remove-button" @onclick="() => RemoveBranchClass(branch.branchCode, branch.branchName, letter.Id)">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" class="ionicon" viewBox="0 0 512 512"><path d="M112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" /><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M80 112h352" /><path d="M192 112V72h0a23.93 23.93 0 0124-24h80a23.93 23.93 0 0124 24h0v40M256 176v224M184 176l8 224M328 176l-8 224" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" /></svg>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <br />
+                                <div class="col-span-2">
+                                    <div class="pagination">
+                                        <select class="select-size" @bind="pageSize" @oninput="PageSizeChanged">
+
+                                            <option value="5">5</option>
+                                            <option value="10" selected>10</option>
+                                            <option value="20">20</option>
+                                            <option value="50">50</option>
+                                            <option value="100">100</option>
+                                        </select>
+                                        @if (currentPage <= 1)
+                                        {
+                                            <button class="pagination-prev" @onclick="() => ChangePage(currentPage - 1)" disabled>
+                                                <svg class="icon-prev" viewBox="0 0 64 74" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M7.35169 27.7144L45.1028 3.73919C52.4262 -0.911806 62 4.34935 62 13.0248L62 60.9752C62 69.6507 52.4262 74.9118 45.1028 70.2608L7.35171 46.2857C0.547947 41.9647 0.547935 32.0353 7.35169 27.7144Z" stroke="#00A3AD" fill="#00A3AD" stroke-width="4" />
+                                                </svg>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button class="pagination-prev" @onclick="() => ChangePage(currentPage - 1)">
+                                                <svg class="icon-prev" viewBox="0 0 64 74" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M7.35169 27.7144L45.1028 3.73919C52.4262 -0.911806 62 4.34935 62 13.0248L62 60.9752C62 69.6507 52.4262 74.9118 45.1028 70.2608L7.35171 46.2857C0.547947 41.9647 0.547935 32.0353 7.35169 27.7144Z" stroke="#00A3AD" stroke-width="4" />
+                                                </svg>
+                                            </button>
+                                        }
+                                        @* <label>Page @currentPage of @totalPages</label> *@
+                                        @foreach (int i in GetPagesToDisplay(totalPages, currentPage))
+                                        {
+                                            if (i == -1)
+                                            {
+                                                <span style="width: 30px; height: 30px; margin-left: 10px;">...</span>
+                                            }
+                                            else
+                                            {
+                                                <button @onclick="() => SelectPage(i)" class="@(i == currentPage ? "active" : "") pagination-number ">
+                                                    @i
+                                                </button>
+                                            }
+                                        }
+                                        @if (currentPage >= totalPages)
+                                        {
+                                            <button class="pagination-next" @onclick="() => ChangePage(currentPage + 1)" disabled>
+                                                <svg class="icon-next" viewBox="0 0 64 74" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M56.6483 46.2857L18.8972 70.2608C11.5738 74.9118 2 69.6507 2 60.9752L2 13.0248C2 4.34935 11.5738 -0.911817 18.8972 3.73917L56.6483 27.7143C63.452 32.0353 63.4521 41.9647 56.6483 46.2857Z" stroke="#00A3AD" fill="#00A3AD" stroke-width="4" />
+                                                </svg>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button class="pagination-next" @onclick="() => ChangePage(currentPage + 1)">
+                                                <svg class="icon-next" viewBox="0 0 64 74" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M56.6483 46.2857L18.8972 70.2608C11.5738 74.9118 2 69.6507 2 60.9752L2 13.0248C2 4.34935 11.5738 -0.911817 18.8972 3.73917L56.6483 27.7143C63.452 32.0353 63.4521 41.9647 56.6483 46.2857Z" stroke="#00A3AD" stroke-width="4" />
+                                                </svg>
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        }
+                    }
+                    else
+                    {
+                        <p>No branches found.</p>
+                    }
+                }
+            }
+            else if (CanDisplayData)
+            {
+                <br />
+                <div style="display:flex;justify-content:space-between;" class="col-span-2">
+                    <div class="col-span-1" style="width: 30%">
+                        <input style="width:100%" id="search_input" name="search_input" type="text" placeholder="Search for Branch Code and Branch Name..." @bind="searchInput" @oninput="FilterRecords" />
+                    </div>
+                    <div>
+                        <button class="remove-selected-button" @onclick="ConfirmBeforeRemoving">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" class="ionicon" viewBox="0 0 512 512"><path d="M112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" /><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M80 112h352" /><path d="M192 112V72h0a23.93 23.93 0 0124-24h80a23.93 23.93 0 0124 24h0v40M256 176v224M184 176l8 224M328 176l-8 224" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" /></svg> Remove All
+                        </button>
+                        @* <button class="remove-selected-button">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" class="ionicon" viewBox="0 0 512 512"><path d="M112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" /><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M80 112h352" /><path d="M192 112V72h0a23.93 23.93 0 0124-24h80a23.93 23.93 0 0124 24h0v40M256 176v224M184 176l8 224M328 176l-8 224" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" /></svg> Remove Selected
+                        </button> *@
+
+                    </div>
+                </div>
+                <br />
+                @if (isLoading)
+                {
+                    <p>Loading...</p>
+                }
+                else
+                {
+                    if(searchInput != ""){
+                        <div class="col-span-2">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th width="20%">Branch Code</th>
+                                        <th width="50%">Branch Name</th>
+                                        <th width="20%">Store Classification</th>
+                                        <th width="10%">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var branch in paginatedAllStoreClass)
+                                    {
+                                        <tr>
+                                            <td>@branch.branchCode</td>
+                                            <td>@branch.branchName</td>
+                                            <td>
+                                                @{
+                                                    selectedClassification = selectedCategory switch
+                                                    {
+                                                        "LAMPS" => branch.lampsClassification,
+                                                        "FRAMES" => branch.framesClassification,
+                                                        "DECOR" => branch.decorClassification,
+                                                        "STATIONERY" => branch.stationeryClassification,
+                                                        "CLOCKS" => branch.clocksClassification,
+                                                        _ => "Unknown category"
+                                                    };
+                                                }
+
+                                                <select class="select-input" value="@selectedClassification" @onchange="@(e => StoreClassChangeSearch(e, branch.branchCode, branch.branchName))">
+
+                                                    @foreach (var alpha in classifications)
+                                                    {
+                                                        <option value="@alpha.Id" selected="@(alpha.Id.ToString() == selectedClassification ? "selected" : null)">
+                                                            @alpha.Name
+                                                        </option>
+                                                    }
+                                                </select>
+
+                                            </td>
+                                            <td>
+                                                <button class="remove-button" @onclick="() => RemoveBranchClass(branch.branchCode, branch.branchName, 0)">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" class="ionicon" viewBox="0 0 512 512"><path d="M112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" /><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M80 112h352" /><path d="M192 112V72h0a23.93 23.93 0 0124-24h80a23.93 23.93 0 0124 24h0v40M256 176v224M184 176l8 224M328 176l-8 224" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" /></svg>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <br />
+                        <div class="col-span-2">
+                            <div class="pagination">
+                                <select class="select-size" @bind="pageSize" @oninput="PageSizeChanged">
+
+                                    <option value="5">5</option>
+                                    <option value="10" selected>10</option>
+                                    <option value="20">20</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>
+                                @if (currentPage <= 1)
+                                {
+                                    <button class="pagination-prev" @onclick="() => ChangePage(currentPage - 1)" disabled>
+                                        <svg class="icon-prev" viewBox="0 0 64 74" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M7.35169 27.7144L45.1028 3.73919C52.4262 -0.911806 62 4.34935 62 13.0248L62 60.9752C62 69.6507 52.4262 74.9118 45.1028 70.2608L7.35171 46.2857C0.547947 41.9647 0.547935 32.0353 7.35169 27.7144Z" stroke="#00A3AD" fill="#00A3AD" stroke-width="4" />
+                                        </svg>
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button class="pagination-prev" @onclick="() => ChangePage(currentPage - 1)">
+                                        <svg class="icon-prev" viewBox="0 0 64 74" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M7.35169 27.7144L45.1028 3.73919C52.4262 -0.911806 62 4.34935 62 13.0248L62 60.9752C62 69.6507 52.4262 74.9118 45.1028 70.2608L7.35171 46.2857C0.547947 41.9647 0.547935 32.0353 7.35169 27.7144Z" stroke="#00A3AD" stroke-width="4" />
+                                        </svg>
+                                    </button>
+                                }
+                                @* <label>Page @currentPage of @totalPages</label> *@
+                                @foreach (int i in GetPagesToDisplay(totalPages, currentPage))
+                                {
+                                    if (i == -1)
+                                    {
+                                        <span style="width: 30px; height: 30px; margin-left: 10px;">...</span>
+                                    }
+                                    else
+                                    {
+                                        <button @onclick="() => SelectPage(i)" class="@(i == currentPage ? "active" : "") pagination-number ">
+                                            @i
+                                        </button>
+                                    }
+                                }
+                                @if (currentPage >= totalPages)
+                                {
+                                    <button class="pagination-next" @onclick="() => ChangePage(currentPage + 1)" disabled>
+                                        <svg class="icon-next" viewBox="0 0 64 74" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M56.6483 46.2857L18.8972 70.2608C11.5738 74.9118 2 69.6507 2 60.9752L2 13.0248C2 4.34935 11.5738 -0.911817 18.8972 3.73917L56.6483 27.7143C63.452 32.0353 63.4521 41.9647 56.6483 46.2857Z" stroke="#00A3AD" fill="#00A3AD" stroke-width="4" />
+                                        </svg>
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button class="pagination-next" @onclick="() => ChangePage(currentPage + 1)">
+                                        <svg class="icon-next" viewBox="0 0 64 74" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M56.6483 46.2857L18.8972 70.2608C11.5738 74.9118 2 69.6507 2 60.9752L2 13.0248C2 4.34935 11.5738 -0.911817 18.8972 3.73917L56.6483 27.7143C63.452 32.0353 63.4521 41.9647 56.6483 46.2857Z" stroke="#00A3AD" stroke-width="4" />
+                                        </svg>
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    }
+                    else {
+                        @foreach (var letter in classifications)
+                        {
+
+                            <div class="col-span-2">
+                                <div class="accordion">
+                                    <div class="accordion-item">
+                                        <input type="checkbox" id="@($"accordion-{letter.Id}")" class="accordion-checkbox" checked>
+                                        <label for="@($"accordion-{letter.Id}")" class="accordion-title">
+                                            @letter.Name
+                                        </label>
+                                        <div class="accordion-content">
+                                            <table>
+                                                <thead>
+                                                    <tr>
+                                                        <th width="20%">Branch Code</th>
+                                                        <th width="50%">Branch Name</th>
+                                                        <th width="20%">Store Classification</th>
+                                                        <th width="10%">Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var branch in allStoreClass)
+                                                    {
+                                                        selectedClassification = selectedCategory switch
+                                                        {
+                                                            "LAMPS" => branch.lampsClassification,
+                                                            "FRAMES" => branch.framesClassification,
+                                                            "DECOR" => branch.decorClassification,
+                                                            "STATIONERY" => branch.stationeryClassification,
+                                                            "CLOCKS" => branch.clocksClassification,
+                                                            _ => "Unknown category"
+                                                        };
+                                                        if (letter.Id.ToString() == selectedClassification)
+                                                        {
+                                                            <tr>
+                                                                <td>@branch.branchCode</td>
+                                                                <td>@branch.branchName</td>
+                                                                <td>
+                                                                    <select class="select-input" value="@letter.Id" @onchange="@(e => StoreClassChange(e, branch.branchCode, branch.branchName, letter.Id))">
+
+                                                                        @foreach (var alpha in classifications)
+                                                                        {
+                                                                            <option value="@alpha.Id" selected="@(alpha.Id == letter.Id ? "selected" : null)">
+                                                                                @alpha.Name
+                                                                            </option>
+                                                                        }
+                                                                    </select>
+                                                                </td>
+                                                                <td>
+                                                                    <button class="remove-button" @onclick="() => RemoveBranchClass(branch.branchCode, branch.branchName, letter.Id)">
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" class="ionicon" viewBox="0 0 512 512"><path d="M112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" /><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M80 112h352" /><path d="M192 112V72h0a23.93 23.93 0 0124-24h80a23.93 23.93 0 0124 24h0v40M256 176v224M184 176l8 224M328 176l-8 224" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" /></svg>
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                }
+            }
+        </div>
+    </div>
+</div>
+
+
+<Modal @ref="modal" ModalTitle="Add Branch" ModalBody="@ModalBodyContent"></Modal>
+<MoveModal @ref="ConfirmationMove" 
+storeCodeToDelete="@storeCodeToDelete"
+OnConfirm="UpdateStoreClassification"
+ModalBody="@ModalBodyContent">
+</MoveModal>
+<RemoveModal @ref="ConfirmationRemove"
+storeCodeToDelete="@storeCodeToDelete"
+OnConfirm="RemoveStoreClassification"
+ModalBody="@ModalBodyContent">
+</RemoveModal>
+<MassRemoveStoreModal @ref="ConfirmMassRemoveModal" OnConfirm="RemoveAllStores" ModalBody="@ModalBodyContent"></MassRemoveStoreModal>
+
+@code
+{
+    private string? extraHigh, high, medium, small, extraSmall;
+    private bool isLoading = false, buttonState = false;
+    private bool CanAddItems => branchMaintenances != null && branchMaintenances.Any();
+    private string? errorMessage, selectedStoreClassification, selectedType, selectedChain, newItem;
+    private string? selectedAStore, selectedBranchCode, selectedBranchName, selectedCat, selectedClassification;
+    private string? selectedCategory { get; set; }
+    private DateTime dateNow = DateTime.Now;
+    private List<BranchMaintenance> branchMaintenances = new List<BranchMaintenance>();
+    private List<ItemMaintenance> itemMaintenances = new List<ItemMaintenance>();
+    private List<ExceptionItem> exceptionItems = new List<ExceptionItem>();
+    private ExceptionItem newExceptionItem = new ExceptionItem { Items = new List<string>() };
+    private List<StoreClassification> classifications = new List<StoreClassification>();
+    private List<BranchMaintenance> allStoreClass = new List<BranchMaintenance>();
+    private bool isAddingNewItem = false;
+    private int currentClass;
+
+    private bool CanDisplayData { get; set; } = false;
+    private bool PerStoreClass { get; set; } = false;
+
+    private MoveModal ConfirmationMove;
+    private RemoveModal ConfirmationRemove;
+    private MassRemoveStoreModal ConfirmMassRemoveModal;
+    private string storeCodeToDelete, details;
+
+    private List<BranchMaintenance> filteredAllStoreClasstemp = null;
+    private List<BranchMaintenance>? filteredAllStoreClass = new List<BranchMaintenance>();
+    private List<BranchMaintenance>? paginatedAllStoreClass = new List<BranchMaintenance>();
+    private string? searchInput = "";
+    private int currentPage = 1;
+    private int totalPages;
+    private int pageSize = 10;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Call the method to load classifications when the component is initialized
+        await GetClassification();
+        StateHasChanged();
+    }
+
+    private async Task ConfirmBeforeRemoving()
+    {
+        ConfirmMassRemoveModal.OpenModal();
+    }
+
+    private async Task RemoveAllStores(bool confirmed)
+    {
+        if(confirmed){
+            try{
+                string removeAllSql = "";
+
+                if (!string.IsNullOrEmpty(selectedStoreClassification))
+                {
+                    removeAllSql = $@"UPDATE epcbranchclass
+                                        SET {selectedCategory}Classification = 0
+                                        WHERE {selectedCategory}Classification = {selectedStoreClassification}";
+                }
+                else
+                {
+                    removeAllSql = $@"UPDATE epcbranchclass
+                                        SET {selectedCategory}Classification = 0";
+                }
+
+                await _data.SaveData(removeAllSql, new { }, Configuration.GetConnectionString("DefaultConnection"));
+
+                // Console.WriteLine($"SQL: {removeAllSql}");
+            }
+            catch (Exception ex){
+                Console.WriteLine($"Remove Error: {ex.Message}");
+            }
+        }
+    }
+
+    private async Task GetBranchz()
+    {
+        try
+        {
+            isLoading = true;
+            string getChainCode = $@"SELECT e.branchCode, e.branchName, c.epcCampaignChain, s.name as storeName
+                                FROM epcbranchmaintenance e
+                                JOIN epcbranchclass c ON c.branchcode = e.branchCode
+                                JOIN store_classification s ON s.Id = c.{selectedCategory}Classification
+                                WHERE c.epcCampaignChain = {selectedChain} AND c.{selectedCategory}Classification = {selectedStoreClassification}";
+            // Console.WriteLine($"Query: {getChainCode}");
+
+            // Check for null or empty values
+            if (string.IsNullOrEmpty(selectedChain) || string.IsNullOrEmpty(selectedStoreClassification))
+            {
+                throw new ArgumentException("Chain and Store Classification must be specified.");
+            }
+
+
+
+            // Use parameters to prevent SQL injection
+            var parameters = new
+            {
+                Chain = selectedChain,
+                StoreClassification = selectedStoreClassification
+            };
+            branchMaintenances = await _data.LoadData<BranchMaintenance, dynamic>(getChainCode, parameters, Configuration.GetConnectionString("DefaultConnection"));
+
+            filteredAllStoreClass = branchMaintenances;
+
+            await ChangePage(1);
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            // Handle error (log or display an error message)
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task GetClassification()
+    {
+        if (selectedChain == null && selectedCategory == null && selectedStoreClassification == null)
+        {
+            try
+            {
+                string getStores = $@"SELECT Id, name FROM store_classification";
+                classifications = await _data.LoadData<StoreClassification, dynamic>(getStores, new { }, Configuration.GetConnectionString("DefaultConnection"));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+        }
+    }
+
+    private async Task GetAllStoreClass()
+    {
+        try
+        {
+            selectedCat = selectedCategory switch
+            {
+                "FRAMES" => "framesClassification",
+                "DECOR" => "decorClassification",
+                "LAMPS" => "lampsClassification",
+                "CLOCKS" => "clocksClassification",
+                "STATIONERY" => "stationeryClassification",
+                _ => null
+            };
+            string getall = $@"SELECT e.branchCode, e.branchName, c.epcCampaignChain, c.{selectedCat}
+                      FROM epcbranchmaintenance e
+                      JOIN epcbranchclass c ON c.branchcode = e.branchCode
+                      JOIN store_classification s ON s.Id = c.{selectedCategory}Classification
+                      WHERE c.epcCampaignChain = {selectedChain}";
+            // Console.WriteLine($"Get All: {getall}");
+            allStoreClass = await _data.LoadData<BranchMaintenance, dynamic>(getall, new { }, Configuration.GetConnectionString("DefaultConnection"));
+
+            filteredAllStoreClass = allStoreClass;
+
+            foreach(var item in allStoreClass)
+            {
+                // Console.WriteLine($"Branch Code: {item.branchCode.ToString()}");
+                // Console.WriteLine($"Branch Name: {item.branchName.ToString()}");
+
+                selectedClassification = selectedCategory switch
+                {
+                    "LAMPS" => item.lampsClassification,
+                    "FRAMES" => item.framesClassification,
+                    "DECOR" => item.decorClassification,
+                    "STATIONERY" => item.stationeryClassification,
+                    "CLOCKS" => item.clocksClassification,
+                    _ => "Unknown category"
+                };
+            };
+
+
+
+            await ChangePage(1);
+            StateHasChanged();
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine($"Error All: {ex.Message}");
+        }
+    }
+
+    private void PageSizeChanged(ChangeEventArgs e)
+    {
+        pageSize = int.Parse((e.Value as string)?.Trim());
+        currentPage = 1;
+        ChangePage(1);
+    }
+
+    private async Task ChangePage(int page)
+    {
+        currentPage = page;
+        totalPages = (int)Math.Ceiling((double)filteredAllStoreClass.Count / pageSize);
+        paginatedAllStoreClass = filteredAllStoreClass.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+        StateHasChanged();
+    }
+
+    private async Task SelectPage(int selectedPage)
+    {
+        await ChangePage(selectedPage);
+    }
+
+    private IEnumerable<int> GetPagesToDisplay(int totalPages, int currentPage)
+    {
+        const int pagesToShow = 5;
+
+        if (totalPages <= pagesToShow)
+        {
+            return Enumerable.Range(1, totalPages);
+        }
+
+        var pages = new List<int>();
+
+        // Add the first two pages
+        pages.Add(1);
+        if (totalPages > 2)
+        {
+            pages.Add(2);
+        }
+
+        // Add a separator if necessary
+        if (currentPage > 4)
+        {
+            pages.Add(-1); // -1 represents the "..." separator
+        }
+
+        // Add the current page and its neighbors
+        var start = Math.Max(3, currentPage - 1);
+        var end = Math.Min(totalPages - 2, currentPage + 1);
+        for (int i = start; i <= end; i++)
+        {
+            pages.Add(i);
+        }
+
+        // Add a separator if necessary
+        if (currentPage < totalPages - 3)
+        {
+            pages.Add(-1); // -1 represents the "..." separator
+        }
+
+        // Add the last two pages
+        if (totalPages > 1)
+        {
+            pages.Add(totalPages - 1);
+        }
+        pages.Add(totalPages);
+
+        return pages;
+    }
+
+    private async Task FilterRecords(ChangeEventArgs e)
+    {
+        string searchTerm = (string)e.Value;
+        await FilterRecordsBySearchTerm(searchTerm);
+    }
+
+    private async Task FilterRecordsBySearchTerm(string searchTerm)
+    {
+        if (!string.IsNullOrEmpty(searchTerm))
+        {
+            if (filteredAllStoreClasstemp == null)
+                filteredAllStoreClass = allStoreClass.Where(pdf => pdf.branchCode.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) || pdf.branchName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+            else
+                filteredAllStoreClass = filteredAllStoreClasstemp.Where(pdf => pdf.branchCode.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) || pdf.branchName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            //await IJSRuntime.InvokeAsync<string>("console.log", "filteredPdfFilestemp", filteredItemsTemp);
+            //await IJSRuntime.InvokeAsync<string>("console.log", "filteredPdfFiles", filteredItems);
+            //await IJSRuntime.InvokeAsync<string>("console.log", "paginatedPdfFiles", paginatedItems);
+        }
+        else
+        {
+            if (filteredAllStoreClasstemp != null)
+                filteredAllStoreClass = filteredAllStoreClasstemp.Where(pdf => pdf.branchCode.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) || pdf.branchName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToList();
+            else
+                filteredAllStoreClass = allStoreClass;
+        }
+        await ChangePage(1);
+        StateHasChanged();
+    }
+
+    private async Task ClearDropDown()
+    {
+        await IJSRuntime.InvokeVoidAsync("window.location.reload");
+    }
+
+    private async Task OnChainChanged(ChangeEventArgs e) { selectedChain = e.Value.ToString(); await CheckAndDisplayData(); }
+
+    private async Task OnCategoryChanged(ChangeEventArgs e) { selectedCategory = e.Value.ToString(); await CheckAndDisplayData(); }
+
+    private async Task OnStoreClassificationChanged(ChangeEventArgs e) { selectedStoreClassification = e.Value.ToString(); await CheckAndDisplayData(); }
+
+    private async Task OnTypeChanged(ChangeEventArgs e) { selectedType = e.Value.ToString(); await CheckAndDisplayData(); }
+
+    private async void StoreClassChange(ChangeEventArgs e, string branchCode, string branchName, int classFrom)
+    {
+        selectedAStore = e.Value.ToString();
+        selectedBranchCode = branchCode;
+        selectedBranchName = branchName;
+        currentClass = classFrom;
+
+        string? className = selectedAStore switch
+        {
+            "1" => "A STORES – EXTRA HIGH",
+            "2" => "B STORES– HIGH",
+            "3" => "C STORES - MEDIUM",
+            "4" => "D STORES- SMALL",
+            "5" => "E STORES - EXTRA SMALL",
+            _ => null
+
+        };
+
+        storeCodeToDelete = $"{branchCode} to {className}";
+        Console.WriteLine($"A selected: {selectedAStore}, Brach Code: {selectedBranchCode}, Branch Name: {selectedBranchName}");
+
+        ConfirmationMove.OpenModal();
+    }
+
+    private async void StoreClassChangeSearch(ChangeEventArgs e, string branchCode, string branchName)
+    {
+        selectedAStore = e.Value.ToString();
+        selectedBranchCode = branchCode;
+        selectedBranchName = branchName;
+
+        string? className = selectedAStore switch
+        {
+            "1" => "A STORES – EXTRA HIGH",
+            "2" => "B STORES– HIGH",
+            "3" => "C STORES - MEDIUM",
+            "4" => "D STORES- SMALL",
+            "5" => "E STORES - EXTRA SMALL",
+            _ => null
+
+        };
+
+        storeCodeToDelete = $"{branchCode} to {className}";
+        Console.WriteLine($"A selected: {selectedAStore}, Brach Code: {selectedBranchCode}, Branch Name: {selectedBranchName}");
+
+        ConfirmationMove.OpenModal();
+    }
+
+    private async Task UpdateStoreClassification(bool confirmed)
+    {
+        if (confirmed)
+        {
+            try
+            {
+                isLoading = true; // Show loading indicator
+                string updatequery = $@"UPDATE epcbranchclass
+                                    SET {selectedCategory}classification = {selectedAStore}
+                                    WHERE branchCode = '{selectedBranchCode}'";
+                var parameters = new
+                {
+                    Id = selectedAStore,
+                    branchCode = selectedBranchCode
+                };
+                await _data.SaveData(updatequery, parameters, Configuration.GetConnectionString("DefaultConnection"));
+                CheckAndDisplayData(); // Refresh the data after update
+                isLoading = false; // Hide loading indicator
+                                   // Console.WriteLine($"Update SQL: {updatequery}");
+
+                string logsSql = $@"INSERT INTO epc_store_logs (chain, category, branchClass, branchCode, branchName, classFrom, classTo, updated_By, updated_Date) 
+                                    VALUES ('{selectedChain}' ,'{selectedCategory}' ,'{selectedCategory}classification', '{selectedBranchCode}' , '{selectedBranchName}',  '{currentClass}', '{selectedAStore}', 'None', '{dateNow}')";
+                // Console.WriteLine($"Update SQL: {logSql}");
+                await _data.SaveData(logsSql, new { }, Configuration.GetConnectionString("DefaultConnection"));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in Update: {ex.Message}");
+            }
+        }
+        else if(!confirmed)
+        {
+            isLoading = true;
+            // Refresh the data if the user cancels the operation
+            await CheckAndDisplayData(); // Reset to the original state by refetching data
+            Console.WriteLine("Action canceled, data refreshed.");
+            isLoading = false;
+        }
+        StateHasChanged();
+    }
+
+    private void RemoveBranchClass(string branchCode, string branchName, int classFrom)
+    {
+        selectedBranchCode = branchCode;
+        selectedBranchName = branchName;
+        currentClass = classFrom;
+        storeCodeToDelete = $"{branchCode} - {branchName}";
+        ConfirmationRemove.OpenModal();
+    }
+
+    private async Task RemoveStoreClassification(bool confirmed)
+    {
+        if (confirmed)
+        {
+            try
+            {
+                isLoading = true; // Show loading indicator
+                string removequery = $@"UPDATE epcbranchclass
+                                    SET {selectedCategory}classification = 0
+                                    WHERE branchCode = '{selectedBranchCode}'";
+                var parameters = new
+                {
+                    branchCode = selectedBranchCode
+                };
+                await _data.SaveData(removequery, parameters, Configuration.GetConnectionString("DefaultConnection"));
+
+                string logsSql = $@"INSERT INTO epc_store_logs (chain, category, branchClass, branchCode, branchName, classFrom, classTo, updated_By, updated_Date)
+                                    VALUES ('{selectedChain}' ,'{selectedCategory}' ,'{selectedCategory}classification', '{selectedBranchCode}' , '{selectedBranchName}',  '{currentClass}', '0', 'None', '{dateNow}')";
+                // Console.WriteLine($"Update SQL: {logSql}");
+                await _data.SaveData(logsSql, new { }, Configuration.GetConnectionString("DefaultConnection"));
+
+                Console.WriteLine($"Update SQL: {removequery}");
+                CheckAndDisplayData(); // Refresh the data after update
+                isLoading = false; // Hide loading indicator
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in Remove: {ex.Message}");
+            }
+        }
+
+    }
+
+    private async Task CheckAndDisplayData()
+    {
+
+
+        // Check if all the selections are valid
+        if (!string.IsNullOrEmpty(selectedChain) &&
+            !string.IsNullOrEmpty(selectedCategory))
+        {
+            CanDisplayData = string.IsNullOrEmpty(selectedStoreClassification);
+            PerStoreClass = !CanDisplayData;
+
+            // Console.WriteLine($"CanDisplay: {CanDisplayData}");
+            // Console.WriteLine($"CanDisplay: {PerStoreClass}");
+
+            // Create a dictionary for pricing tiers based on chain and category
+            var pricingTiers = new Dictionary<string, Dictionary<string, (string ExtraHigh, string High, string Medium, string Small, string ExtraSmall)>>()
+            {
+                { "1", new Dictionary<string, (string, string, string, string, string)>
+                    {
+                        { "LAMPS", ("₱65,000 and above sold", "₱40,000 to ₱64,999 sold", "₱25,000 to ₱39,999 sold", "₱15,000 to ₱24,999 sold", "₱14,999 below sold") },
+                        { "DECOR", ("₱100,000 and above sold", "₱70,000 to ₱99,999 sold", "₱50,000 to ₱69,999 sold", "₱30,000 to ₱49,999 sold", "₱29,999 below sold") },
+                        { "CLOCKS", ("₱50,000 and above sold", "₱30,000 to ₱49,999 sold", "₱20,000 to ₱29,999 sold", "₱10,000 to ₱19,999 sold", "₱9,999 below sold") },
+                        { "STATIONERY", ("₱20,000 and above sold", "₱10,000 to ₱19,999 sold", "₱6,000 to ₱9,999 sold", "₱4,000 to ₱5,999 sold", "₱3,999 below sold") }
+                    }
+                },
+                { "2", new Dictionary<string, (string, string, string, string, string)>
+                    {
+                        { "LAMPS", ("₱75,000 and above sold", "₱45,000 to ₱74,999 sold", "₱30,000 to ₱44,999 sold", "₱15,000 to ₱29,999 sold", "₱14,999 below sold") },
+                        { "DECOR", ("₱25,000 and above sold", "₱20,000 to ₱24,999 sold", "₱15,000 to ₱19,999 sold", "₱10,000 to ₱14,999 sold", "₱9,999 below sold") },
+                        { "FRAMES", ("₱75,000 and above sold", "₱45,000 to ₱74,999 sold", "₱30,000 to ₱44,999 sold", "₱15,000 to ₱29,999 sold", "₱14,999 below sold") }
+                    }
+                },
+                { "3", new Dictionary<string, (string, string, string, string, string)>
+                    {
+                        { "LAMPS", ("₱70,000 and above sold", "₱45,000 to ₱69,999 sold", "₱30,000 to ₱44,999 sold", "₱15,000 to ₱29,999 sold", "₱14,999 below sold") },
+                        { "DECOR", ("₱70,000 and above sold", "₱45,000 to ₱69,999 sold", "₱30,000 to ₱44,999 sold", "₱15,000 to ₱29,999 sold", "₱14,999 below sold") },
+                        { "FRAMES", ("₱45,000 and above sold", "₱30,000 to ₱44,999 sold", "₱20,000 to ₱29,999 sold", "₱10,000 to ₱19,999 sold", "₱9,999 below sold") },
+                        { "CLOCKS", ("₱25,000 and above sold", "₱15,000 to ₱24,999 sold", "₱10,000 to ₱14,999 sold", "₱5,000 to ₱9,999 sold", "₱4,999 below sold") }
+                    }
+                }
+            };
+
+            // Get the pricing tiers based on selectedChain and selectedCategory
+            if (pricingTiers.TryGetValue(selectedChain, out var categoryPricing) && categoryPricing.TryGetValue(selectedCategory, out var pricing))
+            {
+                extraHigh = pricing.ExtraHigh;
+                high = pricing.High;
+                medium = pricing.Medium;
+                small = pricing.Small;
+                extraSmall = pricing.ExtraSmall;
+            }
+
+            if (PerStoreClass)
+            {
+
+                await FilterRecordsBySearchTerm(searchInput);
+                await ChangePage(currentPage);
+                await GetBranchz();
+                await IJSRuntime.InvokeAsync<string>("console.log", "PerStoreClass", filteredAllStoreClass);
+            }
+            else
+            {
+                if (searchInput != "")
+                {
+                    await FilterRecordsBySearchTerm(searchInput);
+                    await ChangePage(currentPage);
+
+                }
+                else
+                {
+                    await GetAllStoreClass();
+                }
+                    await IJSRuntime.InvokeAsync<string>("console.log", "PerStoreClassNOT", filteredAllStoreClass);
+            }
+
+        }
+        else
+        {
+            CanDisplayData = false;
+        }
+
+        // Force UI to update
+        StateHasChanged();
+    }
+
+    private Modal modal;
+    private RenderFragment ModalBodyContent => builder =>
+    {
+        builder.OpenElement(0, "p");
+        builder.AddContent(1, "Modal body text.");
+        builder.CloseElement();
+    };
+
+    private void OpenModal()
+    {
+        modal.OpenModal();
+    }
+
+    public class SheetData
+    {
+        public string FileName { get; set; }
+        public string SheetName { get; set; }
+        public List<List<object>> CellValue { get; set; }
+        public string MonthName { get; set; }
+    }
+    List<SheetData> sheetDataList = new List<SheetData>();
+
+    async Task HandleFileChangeSol(InputFileChangeEventArgs e)
+    {
+        sheetDataList = await ImportExcelFile(e);
+        await UploadBranchMaintenance();
+        StateHasChanged();
+    }
+
+    async Task<List<SheetData>> ImportExcelFile(InputFileChangeEventArgs e) // Modified 02/05/2024
+    {
+        List<SheetData> sheetDataList = new();
+
+        if (!e.GetMultipleFiles(1).Any())
+        {
+            Console.WriteLine("Upload failed: No file selected.");
+            return sheetDataList;
+        }
+
+        foreach (var file in e.GetMultipleFiles(1))
+        {
+            using MemoryStream ms = new();
+            await file.OpenReadStream(maxAllowedSize: 1024 * 2000).CopyToAsync(ms);
+            ms.Position = 0;
+
+            string fileName = file.Name;
+            string fileExtension = Path.GetExtension(file.Name).ToLower();
+
+            if (fileExtension != ".xls" && fileExtension != ".xlsx")
+            {
+                Console.WriteLine($"{fileName} is not a valid Excel file.");
+                continue;
+            }
+
+            using IWorkbook workbook = fileExtension == ".xls"
+                ? new HSSFWorkbook(ms)
+                : new XSSFWorkbook(ms);
+
+            ISheet sheet = workbook.GetSheetAt(0);
+            var sheetData = new SheetData
+                {
+                    FileName = fileName,
+                    SheetName = sheet.SheetName,
+                    CellValue = new List<List<object>>()
+                };
+
+            Console.WriteLine($"Processing sheet: {sheetData.SheetName} from file: {fileName}");
+
+            for (int row = 1; row <= sheet.LastRowNum; row++) // 🛑 START READING FROM ROW 2
+            {
+                IRow currentRow = sheet.GetRow(row);
+                if (currentRow == null) continue; // Skip empty rows
+
+                List<object> rowData = new();
+                for (int col = 0; col < currentRow.LastCellNum; col++)
+                {
+                    ICell cell = currentRow.GetCell(col);
+                    string cellValue = cell != null ? GetCellValue(cell) : string.Empty;
+                    rowData.Add(cellValue);
+                }
+                sheetData.CellValue.Add(rowData);
+            }
+
+            sheetDataList.Add(sheetData);
+        }
+
+        return sheetDataList;
+    }  
+
+    // ✅ Helper function to handle different Excel cell types
+    private static string GetCellValue(ICell cell) // Added 02/05/2024
+    {
+        return cell.CellType switch
+        {
+            CellType.String => cell.StringCellValue,
+            CellType.Numeric => DateUtil.IsCellDateFormatted(cell)
+                ? Convert.ToDateTime(cell.DateCellValue).ToString("yyyy-MM-dd")
+                : cell.NumericCellValue.ToString(),
+            CellType.Boolean => cell.BooleanCellValue.ToString(),
+            _ => cell.ToString()
+        };
+    }  
+
+    // Nullable fields
+    private string? sheetChain, sheetCategory, sheetClassification, sheetBranchName, sheetBranchCode;
+
+    private async Task UploadBranchMaintenance()
+    {
+        Console.WriteLine("Upload Branch Maintenance method triggered.");
+
+        try
+        {
+            if (sheetDataList == null || !sheetDataList.Any())
+            {
+                Console.WriteLine("No data in sheetDataList.");
+                return;
+            }
+
+            foreach (var data in sheetDataList)
+            {
+                try
+                {
+                    foreach (var row in data.CellValue)
+                    {
+                        int cellCount = 0;
+                        sheetChain = sheetCategory = sheetClassification = sheetBranchCode = sheetBranchName = null;
+
+                        foreach (var cell in row)
+                        {
+                            cellCount++;
+
+                            switch (cellCount)
+                            {
+                                case 1:
+                                    sheetChain = cell.ToString() switch
+                                    {
+                                        "VARIOUS CHAIN" => "1",
+                                        "SM HOMEWORLD" => "2",
+                                        "OUR HOME" => "3",
+                                        _ => null
+                                    };
+                                    break;
+                                case 2:
+                                    sheetCategory = cell.ToString();
+                                    break;
+                                case 3:
+                                    sheetClassification = cell.ToString() switch
+                                    {
+                                        "A STORES - EXTRA HIGH" => "1",
+                                        "B STORES - HIGH" => "2",
+                                        "C STORES - MEDIUM" => "3",
+                                        "D STORES - SMALL" => "4",
+                                        "E STORES - EXTRA SMALL" => "5",
+                                        _ => null
+                                    };
+                                    break;
+                                case 4:
+                                    sheetBranchCode = cell.ToString();
+                                    break;
+                                case 5:
+                                    sheetBranchName = cell.ToString();
+                                    break;
+                            }
+                        }
+                        var sheetQuery = $@"UPDATE epcbranchclass
+                                            SET {sheetCategory}Classification = {sheetClassification}
+                                            WHERE branchCode = '{sheetBranchCode}' AND epcCampaignChain = {sheetChain}";
+
+                        var logsSQL = $@"INSERT INTO epc_store_logs (chain, category, branchClass, branchCode, branchName, classFrom, classTo, updated_By, updated_Date)
+                                            VALUES ('{sheetChain}', '{sheetCategory}', '{sheetCategory.ToLower()}classification', '{sheetBranchCode}', '{sheetBranchName}', 'Excel Upload', '{sheetClassification}', 'excel user', '{dateNow}')";
+
+                        await _data.SaveData(sheetQuery, new { branchCode = sheetBranchCode }, Configuration.GetConnectionString("DefaultConnection"));
+                        await _data.SaveData(logsSQL, new { }, Configuration.GetConnectionString("DefaultConnection"));
+
+                    }
+                    successMessage = "Upload completed successfully!";
+                    success = true;
+
+                }
+                catch(Exception ex){
+                    Console.WriteLine($"Error executing query: {ex.Message}");
+                    successMessage = "Upload failed, please check your data!";
+                    success = false;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in Upload Branch Maintenance: {ex.Message}");
+            // Log the error with more details for debugging
+        }
+    }
+
+    private string successMessage = string.Empty;
+    bool success = true;
+
+    private async Task Template()
+    {
+
+        using (var workbook = new XSSFWorkbook())
+        {
+            var sheet = workbook.CreateSheet("Template");
+
+            // Creating header
+            var headerRow = sheet.CreateRow(0);
+            headerRow.CreateCell(0).SetCellValue("Chain");
+            headerRow.CreateCell(1).SetCellValue("Category");
+            headerRow.CreateCell(2).SetCellValue("Store Classification");
+            headerRow.CreateCell(3).SetCellValue("Branch Code");
+            headerRow.CreateCell(4).SetCellValue("Branch Name");
+
+            var row = sheet.CreateRow(1);  // Data starts from the second row
+            row.CreateCell(0).SetCellValue("SM HOMEWORLD");
+            row.CreateCell(1).SetCellValue("DECOR");
+            row.CreateCell(2).SetCellValue("A STORES - EXTRA HIGH");
+            row.CreateCell(3).SetCellValue("C-SMHW007");
+            row.CreateCell(4).SetCellValue("SM HOMEWORLD DAVAO");
+
+            using (var stream = new MemoryStream())
+            {
+
+                workbook.Write(stream);
+                var byteArray = stream.ToArray();
+                var fileName = $"Store_Maintenance.xlsx";
+
+                // Convert to base64 and trigger download via JS Interop
+                await IJSRuntime.InvokeVoidAsync("downloadFileFromStream", fileName, new DotNetStreamReference(stream: new MemoryStream(byteArray)));
+            }
+
+        }
+    }
+}

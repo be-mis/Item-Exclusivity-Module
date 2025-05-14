@@ -1,0 +1,449 @@
+@using ItemExclusivity.Data
+@using ItemExclusivity.Models
+@inject IJSRuntime IJSRuntime
+@inject IConfiguration Configuration
+@inject NavigationManager NavigationManager
+@inject IMyDataConnection _data
+
+
+<style>
+    /* Modal content styles */
+    .modal-content-add {
+    background-color: #fefefe;
+    margin: 5% auto; /* 15% from the top and centered */
+    border: 1px solid #888;
+    min-width: auto; /* Could be more or less, depending on screen size */
+    width: 70%;
+    }
+
+    .modal-body{
+        text-align: left !important;
+        box-shadow: none !important;
+    }
+    .cancel-button {
+        border: 2px solid #4B5563;
+        background-color: #4B5563;
+        padding: 2px 16px;
+        color: white;
+        border-radius: 2px;
+    }
+
+        .cancel-button:hover {
+            color: #4B5563;
+            background-color: white;
+            border: 2px solid #4B5563;
+        }
+
+    .remove-button {
+        border: 1px solid #AA0061 !important;
+        background-color: white;
+        padding: 2px 16px;
+        color: #AA0061;
+        border-radius: 2px;
+    }
+
+        .remove-button:hover {
+            color: #FFFFFF;
+            background-color: #AA0061;
+            border: 1px solid #AA0061;
+        }
+</style>
+
+<div class="modal" style="@ModalStyle">
+    <div class="modal-content-add">
+        <div class="form-top"></div>
+        <div class="modal-header">
+            <p class="upload-memorandum">
+                <span class="upload">Adding </span>
+                <span class="memorandum">Branch</span>
+            </p>
+            @* <span @onclick="CloseModal" class="close">&times;</span> *@
+        </div>
+        <div class="modal-body">
+            <div class="form-content" style="padding: 20px;">
+                <div class="col-span-2" style="display: flex; justify-content: space-between; gap: 20px;">
+
+                    <div style="width:100%">
+                        <label>Chain*</label><br />
+                        <select class="select-input" @onchange="OnChainChanged" value="@selectedChain" disabled="@isLoading">
+                            <option value="">-- Select --</option>
+                            <option value="1">Various Chain</option>
+                            <option value="2">SM HOMEWORLD</option>
+                            <option value="3">OUR HOME</option>
+                        </select>
+                    </div>
+
+                    <!-- CATEGORY -->
+                    <div style="width:100%">
+                        <label>Category*</label><br />
+                        <select class="select-input" @onchange="OnCategoryChanged" value="@selectedCategory" disabled="@string.IsNullOrEmpty(selectedChain)">
+                            <option value="">-- Select --</option>
+                            <option value="LAMPS">LAMPS</option>
+                            <option value="DECOR">DECOR</option>
+                            <option value="FRAMES">FRAMES</option>
+                            @if (selectedChain != "2")
+                            {
+                                <option value="CLOCKS">CLOCKS</option>
+                            }
+                            @if (selectedChain == "1")
+                            {
+                                <option value="STATIONERY">STATIONERY</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Store Classification -->
+                    <div style="width:100%">
+                        <label>Store Classification*</label><br />
+                        <select class="select-input" @onchange="OnStoreClassificationChanged" value="@selectedStoreClass" disabled="@string.IsNullOrEmpty(selectedCategory)">
+                            <option value="">-- Select --</option>
+                            @foreach (var store in classifications)
+                            {
+                                <option value="@store.Id">@store.Name</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Branch Name -->
+                    <div style="width:100%">
+                        <label>Branch Name*</label><br />
+                        <select class="select-input" @onchange="OnBranchChanged" value="@selectedBranchCode" disabled="@(string.IsNullOrEmpty(selectedStoreClass))">
+                            <option value="" hidden>-- Select --</option>
+                            @if (CanDisplayData)
+                            {
+                                @foreach(var branch in branchMaintenances){
+                                    // Exclude branches that have already been added
+                                    if (!AddedBranch.Any(b => b.branchcode == branch.branchCode))
+                                    {
+                                        <option value="@branch.branchCode">@branch.branchName</option>
+                                    }
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div style="width:fit-content; white-space: nowrap;height: auto; display: flex; flex-direction: column;">
+                        <button style="margin-top: auto" class="submit-button add-button" @onclick="AddingBranch" disabled="@(string.IsNullOrEmpty(selectedBranchCode))">Add</button>
+                    </div>
+                </div>
+                <br />
+                <div class="grid grid-cols-2">
+                    <div class="col-span-2">
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 15%">Chain</th>
+                                    <th style="width: 15%">Category</th>
+                                    <th style="width: 15%">Store Classification</th>
+                                    <th style="width: 15%">Branch Code</th>
+                                    <th style="width: 30%">Branch Name</th>
+                                    <th style="width: 10%">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var branch in AddedBranch)
+                                {
+                                    <tr>
+                                        <td>
+                                            @branch.chain
+                                        </td>
+                                        <td>
+                                            @branch.category
+                                        </td>
+                                        <td>
+                                            @branch.storeclass
+                                        </td>
+                                        <td>
+                                            @branch.branchcode
+                                        </td>
+                                        <td>
+                                            @branch.branchname
+                                        </td>
+                                        <td>
+                                            <button class="remove-button" @onclick="@(e => RemoveBranch(branch.id))">
+                                                <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" class="ionicon" viewBox="0 0 512 512"><path d="M112 112l20 320c.95 18.49 14.4 32 32 32h184c17.67 0 30.87-13.51 32-32l20-320" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" /><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M80 112h352" /><path d="M192 112V72h0a23.93 23.93 0 0124-24h80a23.93 23.93 0 0124 24h0v40M256 176v224M184 176l8 224M328 176l-8 224" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" /></svg>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <br />
+
+
+            </div>
+        </div>
+        <div class="modal-footer">
+            @*Modified 2/5/2025*@
+            <button @onclick="SaveConfirmation" class="submit-button" disabled="@(!AddedBranch.Any())">
+                Save  
+            </button>
+            <button @onclick="CloseModal" class="cancel-button">Cancel</button>
+        </div>
+    </div>
+</div>
+
+@*Added 2/5/2025*@
+<MassAddingModal @ref="ConfirmMassAddingModal" OnConfirm="SavingBranch"></MassAddingModal>
+
+@code {
+
+    private string selectedChain { get; set; }
+    private string selectedCategory { get; set; }
+    private string selectedStoreClass { get; set; }
+    private string selectedBranchId { get; set; }
+    private string selectedBranchCode { get; set; }
+    private string selectedBranchName { get; set; }
+    private string? storeClassName { get; set; }
+    private bool isLoading = false;
+    private DateTime dateNow = DateTime.Now;
+    private MassAddingModal ConfirmMassAddingModal; // Added 2/5/2025
+
+    public class AddedBranches
+    {
+        public int id { get; set; }
+        public string chain { get; set; }
+        public string category { get; set; }
+        public string storeclass { get; set; }
+        public string storeclassId { get; set; }
+        public string branchcode { get; set; }
+        public string branchname { get; set; }
+    }
+
+    private List<BranchMaintenance> branchMaintenances = new List<BranchMaintenance>();
+    private List<AddedBranches> AddedBranch = new List<AddedBranches>();
+    private List<StoreClassification> classifications = new List<StoreClassification>();
+
+    private bool CanDisplayData { get; set; } = false;
+
+    [Parameter]
+    public string ModalTitle { get; set; }
+
+    [Parameter]
+    public RenderFragment ModalBody { get; set; }
+
+    private string ModalStyle => ShowModal ? "display: block;" : "display: none;";
+
+    private bool ShowModal { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Call the method to load classifications when the component is initialized
+        await GetClassification();
+        StateHasChanged();
+    }
+
+    private async Task GetBranchz()
+    {
+        try
+        {
+            isLoading = true;
+            string getChainCode = $@"SELECT e.branchCode, e.branchName, c.epcCampaignChain
+                                FROM epcbranchmaintenance e
+                                JOIN epcbranchclass c ON c.branchcode = e.branchCode
+                                WHERE c.epcCampaignChain = {selectedChain} AND c.{selectedCategory}Classification = 0";
+            Console.WriteLine($"Query: {getChainCode}");
+
+            // Check for null or empty values
+            if (string.IsNullOrEmpty(selectedChain) || string.IsNullOrEmpty(selectedStoreClass))
+            {
+                throw new ArgumentException("Chain and Store Classification must be specified.");
+            }
+
+            // Use parameters to prevent SQL injection
+            var parameters = new
+            {
+                Chain = selectedChain,
+                StoreClassification = selectedStoreClass
+            };
+            branchMaintenances = await _data.LoadData<BranchMaintenance, dynamic>(getChainCode, parameters, Configuration.GetConnectionString("DefaultConnection"));
+        }
+        catch (Exception ex)
+        {
+            // Handle error (log or display an error message)
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async void CheckAndDisplayData()
+    {
+        // Check if all the selections are valid
+        if (!string.IsNullOrEmpty(selectedChain) &&
+            !string.IsNullOrEmpty(selectedCategory) &&
+            !string.IsNullOrEmpty(selectedStoreClass))
+        {
+            CanDisplayData = true;
+            await GetBranchz();
+        }
+        else
+        {
+            CanDisplayData = false;
+        }
+
+        // Force UI to update
+        StateHasChanged();
+    }
+
+    private async Task GetClassification()
+    {
+        if (selectedChain == null && selectedCategory == null && selectedStoreClass == null)
+        {
+            try
+            {
+                string getStores = $@"SELECT Id, name FROM store_classification";
+                classifications = await _data.LoadData<StoreClassification, dynamic>(getStores, new { }, Configuration.GetConnectionString("DefaultConnection"));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+        }
+    }
+
+    private string? selectedChainName = "";
+    private void OnChainChanged(ChangeEventArgs e)
+    {
+        selectedCategory = string.Empty;
+        selectedStoreClass = string.Empty;
+        selectedBranchCode = string.Empty;
+
+        selectedChain = e.Value.ToString();
+        selectedChainName = selectedChain switch
+        {
+            "1" => "Various Chain",
+            "2" => "SM Homeworld",
+            "3" => "Our Home",
+            _ => null
+        };
+        CheckAndDisplayData();
+        Console.WriteLine($"selectedChain: {selectedChainName}");
+    }
+
+    private void OnCategoryChanged(ChangeEventArgs e)
+    {
+        selectedStoreClass = string.Empty;
+        selectedBranchCode = string.Empty;
+        selectedCategory = e.Value.ToString();
+        CheckAndDisplayData();
+        Console.WriteLine($"selectedCategory: {selectedCategory}");
+    }
+
+    private void OnStoreClassificationChanged(ChangeEventArgs e)
+    {
+        selectedBranchCode = string.Empty;
+        selectedStoreClass = e.Value.ToString();
+        CheckAndDisplayData();
+        Console.WriteLine($"selectedStoreClassification: {selectedStoreClass}");
+    }
+
+    private void OnBranchChanged(ChangeEventArgs e)
+    {
+        selectedBranchCode = e.Value.ToString();
+    }
+
+    public void OpenModal()
+    {
+        ShowModal = true;
+    }
+
+    public void CloseModal()
+    {
+        selectedChain = string.Empty;
+        selectedCategory = string.Empty;
+        selectedStoreClass = string.Empty;
+        selectedBranchId = string.Empty;
+        selectedBranchCode = string.Empty;
+        selectedBranchName = string.Empty;
+        AddedBranch = new List<AddedBranches>();
+        StateHasChanged();
+        ShowModal = false;
+    }
+
+    private int AddedBranchId = 0;
+
+    private void AddingBranch()
+    {
+        string? classificationName ="";
+        @foreach (var branch in branchMaintenances)
+        {
+            if(selectedBranchCode == branch.branchCode)
+            {
+                selectedBranchName = branch.branchName;
+            }
+        }
+        foreach(var category in classifications)
+        {
+            if(selectedStoreClass == category.Id.ToString())
+            {
+                classificationName = category.Name;
+            }
+        }
+
+        AddedBranch.Add(new AddedBranches { id = AddedBranchId++, chain = selectedChainName, category = selectedCategory, 
+                    storeclass = classificationName, storeclassId = selectedStoreClass, branchcode = selectedBranchCode, branchname = selectedBranchName });
+
+        selectedChain = string.Empty;
+        selectedCategory = string.Empty;
+        selectedStoreClass = string.Empty;
+        selectedBranchId = string.Empty;
+        selectedBranchCode = string.Empty;
+        selectedBranchName = string.Empty;
+    }
+
+    private void RemoveBranch(int AddedBranchId)
+    {
+        var branchToRemove = AddedBranch.FirstOrDefault(b => b.id == AddedBranchId);
+        if (branchToRemove != null)
+        {
+            AddedBranch.Remove(branchToRemove);
+        }
+    }
+
+    private async Task SaveConfirmation() // Added 2/5/2025
+    {
+        ConfirmMassAddingModal.OpenModal();
+    }
+
+    private async Task SavingBranch()
+    {
+        int g = 1;
+        try
+        {
+            foreach(var item in AddedBranch)
+            {
+                string updateSql = $@"UPDATE epcbranchclass
+                                    SET {item.category.ToLower()}classification = {item.storeclassId}
+                                    WHERE branchCode = '{item.branchcode}'";
+                await _data.SaveData(updateSql, new { }, Configuration.GetConnectionString("DefaultConnection"));
+
+                Console.WriteLine($"SQL {g++}: {updateSql}");
+                // CloseModal();
+
+                var logsChain = item.chain switch
+                {
+                    "Various Chain" => "1",
+                    "SM Homeworld" => "2",
+                    "Our Home" => "3"
+                };
+                string logsSql = $@"INSERT INTO epc_store_logs (chain, category, branchClass, branchCode, branchName, classFrom, classTo, updated_By, updated_Date)
+                                    VALUES ('{logsChain}' ,'{item.category}' ,'{item.category.ToLower()}classification', '{item.branchcode}' , '{item.branchname}',  'multiple update', '{item.storeclassId}', 'multiple', '{dateNow}')";
+                // Console.WriteLine($"Update SQL: {logSql}");
+                await _data.SaveData(logsSql, new { }, Configuration.GetConnectionString("DefaultConnection"));
+            }
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine($"Error in Saving: {ex.Message}");
+        }
+        finally
+        {
+            CloseModal();
+        }
+    }
+}

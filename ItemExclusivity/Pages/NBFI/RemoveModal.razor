@@ -1,0 +1,148 @@
+<style>
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto;
+        background-color: rgb(0,0,0);
+        background-color: rgba(0,0,0,0.4);
+    }
+
+    .modal-content {
+        background-color: #fefefe;
+        margin: 5% auto;
+        border: 1px solid #888;
+        width: 20%;
+    }
+
+    .modal-body {
+        margin: 0 auto;
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+    .modal-header, .modal-footer {
+        text-align: center;
+    }
+
+    .modal-body {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background-color: white;
+        min-width: 100%;
+        overflow: hidden;
+        padding: 0;
+        box-shadow: none;
+    }
+
+    .form-top {
+        height: 10px;
+        min-width: 100%;
+        background-color: #00A3AD;
+    }
+
+    .form-content {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .yes-button {
+        border: 2px solid #AA0061;
+        background-color: white;
+        padding: 2px 16px;
+        color: #AA0061;
+        border-radius: 2px;
+    }
+
+        .yes-button:hover {
+            color: #FFFFFF;
+            background-color: #AA0061;
+            border: 2px solid #AA0061;
+        }
+
+    p {
+        margin-bottom: 0px !important;
+    }
+</style>
+
+<div class="modal" style="@ModalStyle">
+    <div class="modal-content">
+
+        <div class="form-top"></div>
+        <div class="modal-header">
+        </div>
+        <div class="modal-body">
+            <div class="form-content" style="padding: 20px;">
+                @* @ModalBody *@
+                <p>Are you sure you want to remove thess <b>@(storeCodeToDelete)</b>?</p>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button @onclick="Confirm" class="yes-button">Yes</button>
+            <button @onclick="Cancel" class="cancel-button">No</button>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    [Parameter] public EventCallback<bool> OnConfirm { get; set; }
+    [Parameter] public EventCallback<bool> OnCancel { get; set; }
+
+    private void Confirm()
+    {
+        OnConfirm.InvokeAsync(true);
+        CloseModal();
+    }
+
+    private void Cancel()
+    {
+        OnCancel.InvokeAsync(false);
+        CloseModal();
+    }
+
+    [Parameter]
+    public string ModalTitle { get; set; }
+
+    [Parameter]
+    public RenderFragment ModalBody { get; set; }
+
+    [Parameter]
+    public string storeCodeToDelete { get; set; }
+
+    [Parameter]
+    public string action { get; set; }
+
+    private string ModalStyle => ShowModal ? "display: block;" : "display: none;";
+
+    private bool ShowModal { get; set; }
+
+    public void OpenModal()
+    {
+        ShowModal = true;
+    }
+
+    public void CloseModal()
+    {
+        ShowModal = false;
+    }
+
+}

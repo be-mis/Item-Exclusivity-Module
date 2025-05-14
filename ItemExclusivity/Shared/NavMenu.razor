@@ -1,0 +1,70 @@
+﻿<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">ItemExclusivity</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <p style="color:white;">
+                    EPC
+                </p>
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/epc/ItemExclusivity" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Item Exclusivity
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/epc/storeclassification">
+                <span class="oi oi-plus" aria-hidden="true"></span> Store Maintenance
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/epc/itemexclusivitymaintenance">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Item Maintenance
+            </NavLink>
+        </div>
+    </nav>
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <p style="color:white;">
+                    NBFI
+                </p>
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/nbfi/itemExclusivity" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Item Exclusivity
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/nbfi/storeclassification">
+                <span class="oi oi-plus" aria-hidden="true"></span> Store Maintenance
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/nbfi/itemexclusivitymaintenance">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Item Maintenance
+            </NavLink>
+        </div>
+    </nav>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

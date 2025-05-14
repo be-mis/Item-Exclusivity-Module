@@ -1,0 +1,159 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = ItemExclusivity
+build_property.RootNamespace = ItemExclusivity
+build_property.ProjectDir = /home/sambashare/ItemExclusivity/ItemExclusivity/
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = /home/sambashare/ItemExclusivity/ItemExclusivity
+build_property._RazorSourceGeneratorDebug = 
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/App.razor]
+build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/Pages/EPC/AddItemModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvRVBDL0FkZEl0ZW1Nb2RhbC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/Pages/EPC/ConfirmMassModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvRVBDL0NvbmZpcm1NYXNzTW9kYWwucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/Pages/EPC/ConfirmModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvRVBDL0NvbmZpcm1Nb2RhbC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/Pages/EPC/ConfirmSelectedModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvRVBDL0NvbmZpcm1TZWxlY3RlZE1vZGFsLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/Pages/EPC/Index.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvRVBDL0luZGV4LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/Pages/EPC/ItemExclusivityMaintenance.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvRVBDL0l0ZW1FeGNsdXNpdml0eU1haW50ZW5hbmNlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/Pages/EPC/MassAddingModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvRVBDL01hc3NBZGRpbmdNb2RhbC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/Pages/EPC/MassRemoveItemModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvRVBDL01hc3NSZW1vdmVJdGVtTW9kYWwucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/Pages/EPC/MassRemoveStoreModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvRVBDL01hc3NSZW1vdmVTdG9yZU1vZGFsLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/Pages/EPC/MoveModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvRVBDL01vdmVNb2RhbC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/Pages/EPC/RemoveItemGroup.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvRVBDL1JlbW92ZUl0ZW1Hcm91cC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/Pages/EPC/RemoveModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvRVBDL1JlbW92ZU1vZGFsLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/Pages/EPC/StoreClassMaintenance.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvRVBDL1N0b3JlQ2xhc3NNYWludGVuYW5jZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/Pages/Index.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvSW5kZXgucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/Pages/NBFI/AddItemModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvTkJGSS9BZGRJdGVtTW9kYWwucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/Pages/NBFI/ConfirmModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvTkJGSS9Db25maXJtTW9kYWwucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/Pages/NBFI/ConfirmSelectedModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvTkJGSS9Db25maXJtU2VsZWN0ZWRNb2RhbC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/Pages/NBFI/Index.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvTkJGSS9JbmRleC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/Pages/NBFI/ItemExclusivityMaintenance.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvTkJGSS9JdGVtRXhjbHVzaXZpdHlNYWludGVuYW5jZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/Pages/NBFI/MassRemoveItemModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvTkJGSS9NYXNzUmVtb3ZlSXRlbU1vZGFsLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/Pages/NBFI/MassRemoveStoreModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvTkJGSS9NYXNzUmVtb3ZlU3RvcmVNb2RhbC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/Pages/NBFI/Modal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvTkJGSS9Nb2RhbC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/Pages/NBFI/MoveModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvTkJGSS9Nb3ZlTW9kYWwucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/Pages/NBFI/RemoveModal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvTkJGSS9SZW1vdmVNb2RhbC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/Pages/NBFI/StoreClassificationMaintenance.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvTkJGSS9TdG9yZUNsYXNzaWZpY2F0aW9uTWFpbnRlbmFuY2UucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/Shared/SurveyPrompt.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkL1N1cnZleVByb21wdC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/Pages/EPC/Modal.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvRVBDL01vZGFsLnJhem9y
+build_metadata.AdditionalFiles.CssScope = b-gnbawl7l3e
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/Pages/ExMaintenance.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvRXhNYWludGVuYW5jZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-b8crgj4wv7
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/Shared/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkL01haW5MYXlvdXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-etuw4bgqvi
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/Shared/NavMenu.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkL05hdk1lbnUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-5co7mynrwm
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/Pages/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvRXJyb3IuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/Pages/_Host.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvX0hvc3QuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/sambashare/ItemExclusivity/ItemExclusivity/Pages/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvX0xheW91dC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
